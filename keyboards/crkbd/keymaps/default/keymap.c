@@ -54,6 +54,7 @@ enum macro_keycodes {
 #define KC_XXXXX KC_NO
 #define KC_LOWER LOWER
 #define KC_RAISE RAISE
+#define KC_ADJUST ADJUST
 #define KC_RST   RESET
 #define KC_LRST  RGBRST
 #define KC_LTOG  RGB_TOG
@@ -64,13 +65,27 @@ enum macro_keycodes {
 #define KC_LVAI  RGB_VAI
 #define KC_LVAD  RGB_VAD
 #define KC_LSMOD RGB_SMOD
+#define KC_LPLAIN  RGB_MODE_PLAIN
+#define KC_LBREATHE  RGB_MODE_BREATHE
+#define KC_LRAINBOW  RGB_MODE_RAINBOW
+#define KC_LSWIRL  RGB_MODE_SWIRL
+#define KC_LSNAKE  RGB_MODE_SNAKE
+#define KC_LNIGHT  RGB_MODE_KNIGHT
+#define KC_LXMAS  RGB_MODE_XMAS
+#define KC_LGRADIENT  RGB_MODE_GRADIENT
+#define KC_LTEST RGB_MODE_RGBTEST
 #define KC_CTLTB CTL_T(KC_TAB)
 #define KC_GUIEI GUI_T(KC_LANG2)
 #define KC_ALTKN ALT_T(KC_LANG1)
 
+
+const uint8_t RGBLED_RAINBOW_MOOD_INTERVALS[] PROGMEM = {20, 20, 5};
+const uint8_t RGBLED_RAINBOW_SWIRL_INTERVALS[] PROGMEM = {2, 50, 50};
+const uint8_t RGBLED_SNAKE_INTERVALS[] PROGMEM = {25, 50, 50};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT_kc( \
-  //,-----------------------------------------.                ,-----------------------------------------.
+  //,-----------------------------------------.                ,----------------------------------i-------.
         ESC,     Q,     W,     E,     R,     T,                      Y,     U,     I,     O,     P,  BSPC,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
       CTLTB,     A,     S,     D,     F,     G,                      H,     J,     K,     L,  SCLN,  QUOT,\
@@ -85,9 +100,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------.                ,-----------------------------------------.
         ESC,     1,     2,     3,     4,     5,                      6,     7,     8,     9,     0,  BSPC,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      CTLTB,    F1,    F2,    F3,    F4,    F5,                     F6,    F7,    F8,    F9,   F10, XXXXX,\
+      CTLTB,    F1,    F2,    F3,    F4,    F5,                     F6,    F7,    F8,    F9,   F10, ADJUST,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-       LSFT,   F11,   F12,   F13,   F14,   F15,                    F16,   F17,   F18,   F19,   F20, XXXXX,\
+       LSFT,   F11,   F12,   F13,   F14,   F15,                    F16,   F17,   F18,   F19,   F20, LRST,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
                                   GUIEI, LOWER,   SPC,      ENT, RAISE, ALTKN \
                               //`--------------------'  `--------------------'
@@ -107,11 +122,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_ADJUST] = LAYOUT_kc( \
   //,-----------------------------------------.                ,-----------------------------------------.
-        RST,  LRST, XXXXX, XXXXX, XXXXX, XXXXX,                  XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,\
+        RST,  LRST, LRAINBOW, LPLAIN, LBREATHE, LSWIRL,               1, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-       LTOG,  LHUI,  LSAI,  LVAI, XXXXX, XXXXX,                  XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,\
+       LTOG,  LHUI,  LSAI,  LVAI, LSNAKE, LNIGHT,                  LTEST, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      LSMOD,  LHUD,  LSAD,  LVAD, XXXXX, XXXXX,                  XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,\
+      LSMOD,  LHUD,  LSAD,  LVAD, LXMAS, LGRADIENT,              XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
                                   GUIEI, LOWER,   SPC,      ENT, RAISE, ALTKN \
                               //`--------------------'  `--------------------'
