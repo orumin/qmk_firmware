@@ -97,13 +97,13 @@ const uint8_t RGBLED_SNAKE_INTERVALS[] PROGMEM = {25, 50, 50};
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT_kc( \
   //,-----------------------------------------.                ,-----------------------------------------.
-        BSPC,     Q,     W,     E,     R,     T,                      Y,     U,     I,     O,     P,  MINS,\
+        BSPC,     Q,     W,     E,     R,     T,                      Y,     U,     I,     O,     P,  BSPC,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-       LSFT,     A,     S,     D,     F,     G,                      H,     J,     K,     L,    UP,   ENT,\
+       LSFT,     A,     S,     D,     F,     G,                      H,     J,     K,     L,    UP,   KANJI,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
       LCTRL,     Z,     X,     C,     V,     B,                      N,     M,  COMM,  LEFT,  DOWN,  RGHT,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                   LGUI, LOWER,  ENT,      SPC, RAISE,  GUAP \
+                                   LGUI, LOWER,  SPC,      ENT, RAISE,  GUAP \
                               //`--------------------'  `--------------------'
   ),
 
