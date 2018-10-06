@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "print.h"
-#include "debug.h"
+//#include "debug.h"
 #include "util.h"
 #include "matrix.h"
 #include "split_util.h"
@@ -95,9 +95,9 @@ uint8_t matrix_cols(void)
 
 void matrix_init(void)
 {
-    debug_enable = true;
-    debug_matrix = true;
-    debug_mouse = true;
+    //debug_enable = true;
+    //debug_matrix = true;
+    //debug_mouse = true;
     // initialize row and col
     unselect_rows();
     init_cols();
