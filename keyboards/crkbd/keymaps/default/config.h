@@ -31,10 +31,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MASTER_LEFT
 
 //メイン(master)に書き込むときはこっち
-//#define COMPILE_MAIN
+//#define COMPILE_MIKU
 
-//サブ(子機)に書き込むときはこっち。あと、glcdfont_subをglcdfontにリネーム
-#define COMPILE_SUB
+//サブに書き込むときはこっち
+#define COMPILE_NO_MIKU
 //#define MASTER_RIGHT
 // #define EE_HANDS
 

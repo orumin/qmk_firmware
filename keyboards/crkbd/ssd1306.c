@@ -4,10 +4,10 @@
 #include "i2c.h"
 #include <string.h>
 #include "print.h"
-#ifdef COMPILE_MAIN
+#ifdef COMPILE_NO_MIKU
 #include "glcdfont.c"
 #endif
-#ifdef COMPILE_SUB
+#ifdef COMPILE_MIKU
 #include "glcdfont_miku.c"
 #endif
 #ifdef ADAFRUIT_BLE_ENABLE
@@ -25,6 +25,7 @@
 #define ScreenOffInterval 300000 /* milliseconds */
 static uint16_t last_flush;
 static int font_num = 0;
+static int shutter = 0;
 static bool overwrite_mode = false;
 
 // Write command sequence.
@@ -113,6 +114,9 @@ void set_overwrite_mode (bool value) {
 void set_font_num (int value) {
   font_num = value;
 }
+void set_shutter(int value) {
+  shutter = value;
+}
 bool iota_gfx_init(bool rotate) {
   bool success = false;
 
@@ -200,7 +204,12 @@ static inline void matrix_write_byte(struct CharacterMatrix *matrix, uint8_t byt
 }
 
 static inline void matrix_write_char(struct CharacterMatrix *matrix, uint8_t c) {
-  const uint8_t *glyph = font[font_num] + c * FontWidth;
+  #ifdef COMPILE_NO_MIKU
+    const uint8_t *glyph = font[font_num] + c * FontWidth;
+  #endif
+  #ifdef COMPILE_MIKU
+    const uint8_t *glyph = font[font_num][shutter] + c * FontWidth;
+  #endif
   for (uint8_t glyphCol = 0; glyphCol < FontWidth; ++glyphCol) {
     uint8_t colBits = pgm_read_byte(glyph + glyphCol);
     matrix_write_byte(matrix, colBits);
@@ -208,7 +217,12 @@ static inline void matrix_write_char(struct CharacterMatrix *matrix, uint8_t c) 
 }
 
 static inline void matrix_write_char_delimited(struct CharacterMatrix *matrix, uint8_t c, uint8_t from, uint8_t width) {
-  const uint8_t *glyph = font[font_num] + c * FontWidth;
+  #ifdef COMPILE_NO_MIKU
+    const uint8_t *glyph = font[font_num] + c * FontWidth;
+  #endif
+  #ifdef COMPILE_MIKU
+    const uint8_t *glyph = font[font_num][shutter] + c * FontWidth;
+  #endif
   for (; width--; ++from) {
     uint8_t colBits = pgm_read_byte(glyph + from);
     matrix_write_byte(matrix, colBits);
