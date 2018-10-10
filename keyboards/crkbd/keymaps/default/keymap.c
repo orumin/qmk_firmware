@@ -41,7 +41,7 @@ extern rgblight_config_t rgblight_config;
 #define _LOWER 3
 #define _RAISE 4
 #define _ADJUST 16
-#define _CATLOCK 17
+#define _CATLOCK 5
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
   LOWER,
@@ -406,6 +406,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
         break;
+    case CAT_LOCK1:
+      if (record->event.pressed) {
+        layer_on(_CATLOCK);
+      }
+      break;
+    case CAT_RETURN1:
+      if (record->event.pressed) {
+        layer_off(_CATLOCK);
+      }
+      break;
     case RGB_MOD:
       #ifdef RGBLIGHT_ENABLE
         if (record->event.pressed) {
