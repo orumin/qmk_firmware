@@ -31,10 +31,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MASTER_LEFT
 
 //メイン(master)に書き込むときはこっち
-//#define COMPILE_MIKU
+#define COMPILE_MIKU
 
 //サブに書き込むときはこっち
-#define COMPILE_NO_MIKU
+//#define COMPILE_NO_MIKU
 //#define MASTER_RIGHT
 // #define EE_HANDS
 

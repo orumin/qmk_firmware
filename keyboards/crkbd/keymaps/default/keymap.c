@@ -201,7 +201,7 @@ int press_count = 0;
 int neon_mode = 0;
 bool led_anarchy = false;
 
-#ifdef COMPILE_MIKU
+//#ifdef COMPILE_MIKU
 char miku_1_1[4][21] = {
   {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b},
   {0x00+12, 0x01+12, 0x02+12, 0x03+12, 0x04+12, 0x05+12, 0x06+12, 0x07+12, 0x08+12, 0x09+12, 0x0a+12, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b},
@@ -210,7 +210,7 @@ char miku_1_1[4][21] = {
 };
 
 bool miku_switch = true;
-#endif
+//#endif
 
 void persistent_default_layer_set(uint16_t default_layer) {
   eeconfig_update_default_layer(default_layer);
@@ -334,7 +334,10 @@ void matrix_render_user(struct CharacterMatrix *matrix) {
   #endif
 
   #ifdef COMPILE_NO_MIKU
-    matrix_write_ln(matrix, read_layer_state());
+  matrix_write_ln(matrix, miku_1_1[0]);
+  matrix_write_ln(matrix, miku_1_1[1]);
+  matrix_write_ln(matrix, miku_1_1[2]);
+  matrix_write(matrix, miku_1_1[3]);
 
   #endif
 
@@ -412,8 +415,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       break;
     case CAT_RETURN1:
-      if (record->event.pressed) {
-        layer_off(_CATLOCK);
+      if (IS_LAYER_ON(_CATLOCK)) {
+        if (record->event.pressed) {
+          layer_off(_CATLOCK);
+        }
       }
       break;
     case RGB_MOD:

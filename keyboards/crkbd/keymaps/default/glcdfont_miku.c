@@ -11,7 +11,7 @@
 #elif defined(ESP8266)
  #include <pgmspace.h>
 #else
- #define PROGMEMkl,lk
+ #define PROGMEM
 #endif
 
 
