@@ -41,7 +41,7 @@ extern rgblight_config_t rgblight_config;
 #define _LOWER 3
 #define _RAISE 4
 #define _ADJUST 16
-#define _CATLOCK 5
+//#define _CATLOCK 5
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
   LOWER,
@@ -50,11 +50,11 @@ enum custom_keycodes {
   BACKLIT,
   RGBRST,
   RGB_MODE_NEON,
-  RGB_MODE_ANARCHY,
+  RGB_MODE_ANARCHY/*,
   CAT_LOCK1,
   CAT_LOCK2,
   CAT_RETURN1,
-  CAT_RETURN2
+  CAT_RETURN2*/
 };
 
 enum macro_keycodes {
@@ -123,9 +123,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------.                ,-----------------------------------------.
         ESC,    F1,    F2,    F3,    F4,    F5,                  XXXXX,  MINS,   EQL,  JYEN,  LBRC,  RBRC,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      TAB,    F6,    F7,    F8,    F9,   F10,                  XXXXX, XXXXX, XXXXX,  SCLN,  QUOT,  BSLS,\
+      TAB,    F6,    F7,    F8,    F9,   F10,                  LSPO, XXXXX, XXXXX,  SCLN,  QUOT,  BSLS,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      _____,   F11,   F12, XXXXX, KANJI,   ENT,                  XXXXX, XXXXX,  COMM,   DOT,  SLSH,    RO,\
+      _____,   F11,   F12, XXXXX, KANJI,   ENT,                  RSPC, XXXXX,  COMM,   DOT,  SLSH,    RO,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
                                   _____, _____,   DEL,    XXXXX, _____,   APP \
                               //`--------------------'  `--------------------'
@@ -145,15 +145,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_ADJUST] = LAYOUT_kc( \
   //,-----------------------------------------.                ,-----------------------------------------.
-        RST,  LRST,  KNRM,  KSWP, LPLAIN, LRAINBOW,             LSWIRL, XXXXX, XXXXX, XXXXX, XXXXX, LCATLOCK1,\
+        RST,  LRST,  KNRM,  KSWP, LPLAIN, LRAINBOW,             LSWIRL, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-       LTOG,  LHUI,  LSAI,  LVAI, LSNAKE, LNIGHT,                LTEST, XXXXX, XXXXX, XXXXX,  PGUP, LCATLOCK2,\
+       LTOG,  LHUI,  LSAI,  LVAI, LSNAKE, LNIGHT,                LTEST, XXXXX, XXXXX, XXXXX,  PGUP, XXXXX,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
       LSMOD,  LHUD,  LSAD,  LVAD, LXMAS, LGRADIENT,              LNEON, LANARCHY, XXXXX,  HOME,  PGDN,   END,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
                                   _____, _____, XXXXX,    XXXXX, _____, XXXXX \
                               //`--------------------'  `--------------------'
-  ),
+  )/*,
   [_CATLOCK] = LAYOUT_kc( \
   //,-----------------------------------------.                ,-----------------------------------------.
         XXXXX,  XXXXX,  XXXXX,  XXXXX, XXXXX, XXXXX,             XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, LCATRETURN1,\
@@ -165,6 +165,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                   XXXXX, XXXXX, XXXXX,    XXXXX, XXXXX, XXXXX \
                               //`--------------------'  `--------------------'
   )//キャットロックは未実装
+  */
 };
 
 /*
@@ -241,10 +242,13 @@ void matrix_init_user(void) {
 
 #define WEIGHT 10 // ミリ秒
 int hue = 0;
+int last_time = 0;
 
 void noizy_led(void) {
-  static int last_time = 0;
-  if (timer_elapsed(last_time) > WEIGHT) {
+
+  last_time++;
+  if (last_time > WEIGHT) {
+    last_time = 0;
     for (int i=0; i<=6; i++ ) { //LEDは片方につき7個あるため、その数だけループ
        rgblight_sethsv_at((360 / 6 * i + hue) % 360, 255, 125, i);
      }
@@ -273,17 +277,21 @@ void increment_font_layer(void) {
 }
 #endif
 
+//int shutter_time = 0;
 void matrix_render_user(struct CharacterMatrix *matrix) {
 
   #ifdef COMPILE_MIKU
-
-  if(miku_switch) {
-    set_shutter(0);
-    miku_switch = false;
-  } else {
-    set_shutter(1);
-    miku_switch = true;
-  }
+  //shutter_time++;
+  //if (shutter_time == 2) {
+    if(miku_switch) {
+      set_shutter(0);
+      miku_switch = false;
+    } else {
+      set_shutter(1);
+      miku_switch = true;
+    }
+    //shutter_time = 0;
+  //}
 
   matrix_write_ln(matrix, miku_1_1[0]);
   matrix_write_ln(matrix, miku_1_1[1]);
@@ -409,6 +417,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
         break;
+        /*
     case CAT_LOCK1:
       if (record->event.pressed) {
         layer_on(_CATLOCK);
@@ -421,6 +430,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
       }
       break;
+      */
     case RGB_MOD:
       #ifdef RGBLIGHT_ENABLE
         if (record->event.pressed) {

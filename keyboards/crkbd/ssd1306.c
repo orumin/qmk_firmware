@@ -19,14 +19,30 @@
 #include "sendchar.h"
 #include "timer.h"
 
+//static const unsigned char font[] PROGMEM;
+
+// Set this to 1 to help diagnose early startup problems
+// when testing power-on with ble.  Turn it off otherwise,
+// as the latency of printing most of the debug info messes
+// with the matrix scan, causing keys to drop.
+#define DEBUG_TO_SCREEN 0
+
 //static uint16_t last_battery_update;
 //static uint32_t vbat;
 //#define BatteryUpdateInterval 10000 /* milliseconds */
-#define ScreenOffInterval 300000 /* milliseconds */
+
+// 'last_flush' is declared as uint16_t,
+// so this must be less than 65535
+#define ScreenOffInterval 60000 /* milliseconds */
+#if DEBUG_TO_SCREEN
+static uint8_t displaying;
+#endif
 static uint16_t last_flush;
 static int font_num = 0;
 static int shutter = 0;
 static bool overwrite_mode = false;
+
+static bool force_dirty = true;
 
 // Write command sequence.
 // Returns true on success.
@@ -356,10 +372,17 @@ void iota_gfx_task(void) {
 
   if (display.dirty || background.dirty) {
     iota_gfx_flush();
+    force_dirty = false;
   }
 
   if (timer_elapsed(last_flush) > ScreenOffInterval) {
     iota_gfx_off();
   }
 }
+
+bool process_record_gfx(uint16_t keycode, keyrecord_t *record) {
+  force_dirty = true;
+  return true;
+}
+
 #endif
