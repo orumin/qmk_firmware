@@ -33,8 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MATRIX_COLS 1
 
 /* Planck PCB default pin-out */
-#define MATRIX_ROW_PINS { D0, D1, D2, D3, D4, D5, D6, D7, F4 }
-#define MATRIX_COL_PINS { F5 }
+#define MATRIX_ROW_PINS { B6, B2, D7, B1, F7, F6, F5, F4, B4 }
+#define MATRIX_COL_PINS { B5 }
 #define UNUSED_PINS
 
 /* ws2812 RGB LED */
