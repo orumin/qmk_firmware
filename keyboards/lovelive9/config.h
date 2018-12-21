@@ -14,7 +14,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#define TAPPING_FORCE_HOLD
+#define TAPPING_TERM 100
 #ifndef CONFIG_H
 #define CONFIG_H
 
@@ -33,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MATRIX_COLS 1
 
 /* Planck PCB default pin-out */
-#define MATRIX_ROW_PINS { B6, B2, D7, B1, F7, F6, F5, F4, B4 }
+#define MATRIX_ROW_PINS { B4, B6, B2, D7, B1, F7, F6, F5, F4 }
 #define MATRIX_COL_PINS { B5 }
 #define UNUSED_PINS
 
@@ -47,6 +48,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* COL2ROW or ROW2COL */
 #define DIODE_DIRECTION COL2ROW
 
-#define TAPPING_TERM 200
+
 
 #endif
