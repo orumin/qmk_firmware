@@ -61,7 +61,16 @@ MIDI_ENABLE = no            # MIDI controls
 AUDIO_ENABLE = no           # Audio output on port C6
 UNICODE_ENABLE = yes         # Unicode
 BLUETOOTH_ENABLE = no       # Enable Bluetooth with the Adafruit EZ-Key HID
-RGBLIGHT_ENABLE = no        # Enable WS2812 RGB underlight.
+RGBLIGHT_ENABLE = yes        # Enable WS2812 RGB underlight.
+UNICODE_ENABLE = no
+UNICODEMAP_ENABLE = no
+UCIS_ENABLE = yes
+# Zinc keyboard customize
+LED_BACK_ENABLE = yes        # LED backlight (Enable SK6812mini backlight)
+LED_UNDERGLOW_ENABLE = yes   # LED underglow (Enable WS2812 RGB underlight)
+LED_ANIMATIONS = yes        # LED animations
+IOS_DEVICE_ENABLE = no      # connect to IOS device (iPad,iPhone)
+Link_Time_Optimization = no # if firmware size over limit, try this option
 #API_SYSEX_ENABLE = yes
 #TAP_DANCE_ENABLE = no
 

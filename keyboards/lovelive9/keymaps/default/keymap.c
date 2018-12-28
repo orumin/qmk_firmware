@@ -1,37 +1,41 @@
 #include QMK_KEYBOARD_H
+#include "process_unicode.h"
 
+//#include "v1.h"
 
+//Following line allows macro to read current RGB settings
 
+extern rgblight_config_t rgblight_config;
+rgblight_config_t RGB_current_config;
 
+//#include "rgblight.h"
+
+//rgb led driver
+//#include "ws2812.h"
+//#include "ws2812.c"
 //extern keymap_config_t keymap_config;
-
 #define KC_KANJI KC_GRV
 /*
-#define _DIA 2
-#define _YOU 3
-#define _TIKA 4
-#define _ZURA 5
-#define _RUBY 6
-#define _YOHANE 7
-#define _RIKO 8
-#define _MARI 9
-#define _KANAN 10
-*/
-/*
-enum Layer
+const uint32_t PROGMEM unicode_map[]=
 {
-  _QWERTY,
-  DIA,
-  YOU,
-  TIKA,
-  ZURA,
-  RUBY,
-  YOHANE,
-  RIKO,
-  MARI,
-  KANAN
+    0x9ED0,//beer
+    0x203D,//hatching chick
+    0x1F40D,//heart with arrow
+    0x1f607,//innocent
+    0x1f647,//bow
+    0x1f914,//thinking face
+    0x1f644,//rolling eye
+    0x1f363, //sushi
+    0x1f4b8,//money with wings
 };
 */
+
+const qk_ucis_symbol_t ucis_symbol_table[] = UCIS_TABLE
+(
+ UCIS_SYM("poop", 0x1f4a9),
+ UCIS_SYM("rofl", 0x1f923),
+ UCIS_SYM("kiss", 0x1f619)
+);
 enum Layer
 {
   _QWERTY,
@@ -47,18 +51,7 @@ enum Layer
   _RUBY_SUB1,
   _RUBY_SUB2
 };
-/*
-#define _QWERTY 0
-#define _DIA 3
-#define _YOU 4
-#define _TIKA 5
-#define _ZURA 6
-#define _RUBY 7
-#define _YOHANE 8
-#define _RIKO 9
-#define _MARI 10
-#define _KANAN 11
-*/
+
 #define SEND_DIA 100
 #define SEND_YOU 101
 #define SEND_TIKA 102
@@ -95,7 +88,7 @@ int long_tap_timer;
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT(
     //KC_1, KC_2, KC_3,KC_4, KC_5, KC_6, KC_7, KC_8, KC_9
-    DIA, YOU, TIKA, ZURA, RUBY, YOHANE, RIKO, MARI, KANAN
+    KC_P, KC_O, KC_SPC, KC_BSPC, KC_ENT, YOHANE, RIKO, MARI, KANAN
 //LTはカスタムキーコードも使えないので没
     //LT(_DIA, KC_A), LT(_YOU, KC_B), LT(_TIKA, KC_C), LT(_ZURA, SEND_ZURA), LT(_RUBY, SEND_RUBY), LT(_YOHANE, SEND_YOHANE), LT(_RIKO, SEND_RIKO), LT(_MARI, SEND_MARI), LT(_KANAN, SEND_KANAN)
   ),
@@ -144,7 +137,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 void check_tap_and_send_key(int MEMBER) {
-  if (long_tap_timer < 400) {
+  if(false) {
+  //if (long_tap_timer < 400) {
     switch (MEMBER) {
       case SEND_DIA:
         SEND_STRING("KUROSAWA DIYA");
@@ -177,71 +171,52 @@ void check_tap_and_send_key(int MEMBER) {
   }
   long_tap_timer = 0;
 }
+
+int aqours_color_h[] = { 26, 340, 150,   0, 199, 220, 53, 265, 322};
+int aqours_color_s[] = {255, 165, 255, 255, 255, 350, 255, 255, 255};
+int aqours_color_v[] = {255, 255, 255, 255, 255, 255, 200, 255, 255};
+
+void LED_default_set(void) {
+
+  sethsv(aqours_color_h[2], aqours_color_s[2], aqours_color_v[2], (LED_TYPE *)&led[0]);
+  sethsv(aqours_color_h[7], aqours_color_s[7], aqours_color_v[7], (LED_TYPE *)&led[1]);
+  sethsv(aqours_color_h[1], aqours_color_s[1], aqours_color_v[1], (LED_TYPE *)&led[2]);
+  sethsv(aqours_color_h[5], aqours_color_s[5], aqours_color_v[5], (LED_TYPE *)&led[3]);
+  sethsv(aqours_color_h[8], aqours_color_s[8], aqours_color_v[8], (LED_TYPE *)&led[4]);
+  sethsv(aqours_color_h[6], aqours_color_s[6], aqours_color_v[6], (LED_TYPE *)&led[5]);
+  sethsv(aqours_color_h[0], aqours_color_s[0], aqours_color_v[0], (LED_TYPE *)&led[6]);
+  sethsv(aqours_color_h[4], aqours_color_s[4], aqours_color_v[4], (LED_TYPE *)&led[7]);
+  sethsv(aqours_color_h[3], aqours_color_s[3], aqours_color_v[3], (LED_TYPE *)&led[8]);
+
+  rgblight_set();
+
+}
+
+
+void LED_layer_set(int aqours_index) {
+
+
+  //i2c_init();
+  //i2c_send(0xb0, (uint8_t*)led, 3 * RGBLED_NUM);
+  for (int c = 0; c < 9; c++) {
+  sethsv(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index], (LED_TYPE *)&led[c]);
+    //rgblight_sethsv_noeeprom(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index]);
+  }
+  rgblight_set();
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
-/*
-    case SEND_DIA:
-      if (record->event.pressed) {
-        SEND_STRING("DIA");
-      }
-      return false;
-      break;
-    case SEND_YOU:
-      if (record->event.pressed) {
-        SEND_STRING("YOU");
-      }
-      return false;
-      break;
-    case SEND_TIKA:
-      if (record->event.pressed) {
-        SEND_STRING("TIKA");
-      }
-      return false;
-      break;
-    case SEND_ZURA:
-      if (record->event.pressed) {
-        SEND_STRING("ZURA");
-      }
-      return false;
-      break;
-    case SEND_RUBY:
-      if (record->event.pressed) {
-        SEND_STRING("RUBY");
-      }
-      return false;
-      break;
-    case SEND_YOHANE:
-      if (record->event.pressed) {
-        SEND_STRING("YOHANE");
-      }
-      return false;
-      break;
-    case SEND_RIKO:
-      if (record->event.pressed) {
-        SEND_STRING("RIKO");
-      }
-      return false;
-      break;
-    case SEND_MARI:
-      if (record->event.pressed) {
-        SEND_STRING("MARI");
-      }
-      return false;
-      break;
-    case SEND_KANAN:
-      if (record->event.pressed) {
-        SEND_STRING("KANAN");
-      }
-      return false;
-      break;
-*/
+
     case DIA:
       if (record->event.pressed) {
         long_tap_timer = 1;
         layer_on(_DIA);
+        LED_layer_set(3);
       } else {
         check_tap_and_send_key(SEND_DIA);
         layer_off(_DIA);
+        LED_default_set();
       }
       return false;
       break;
@@ -250,9 +225,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         long_tap_timer = 1;
         layer_on(_YOU);
+        LED_layer_set(4);
       } else {
         check_tap_and_send_key(SEND_YOU);
         layer_off(_YOU);
+        LED_default_set();
       }
       return false;
       break;
@@ -261,9 +238,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         long_tap_timer = 1;
         layer_on(_TIKA);
+        LED_layer_set(0);
       } else {
         check_tap_and_send_key(SEND_TIKA);
         layer_off(_TIKA);
+        LED_default_set();
       }
       return false;
       break;
@@ -272,9 +251,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         long_tap_timer = 1;
         layer_on(_ZURA);
+        LED_layer_set(6);
       } else {
         check_tap_and_send_key(SEND_ZURA);
         layer_off(_ZURA);
+        LED_default_set();
       }
       return false;
       break;
@@ -283,9 +264,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         long_tap_timer = 1;
         layer_on(_RUBY);
+        LED_layer_set(8);
       } else {
         check_tap_and_send_key(SEND_RUBY);
         layer_off(_RUBY);
+        LED_default_set();
       }
       return false;
       break;
@@ -311,9 +294,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         long_tap_timer = 1;
         layer_on(_YOHANE);
+        LED_layer_set(5);
       } else {
         check_tap_and_send_key(SEND_YOHANE);
         layer_off(_YOHANE);
+        LED_default_set();
       }
       return false;
       break;
@@ -322,9 +307,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         long_tap_timer = 1;
         layer_on(_RIKO);
+        LED_layer_set(1);
       } else {
         check_tap_and_send_key(SEND_RIKO);
         layer_off(_RIKO);
+        LED_default_set();
       }
       return false;
       break;
@@ -333,9 +320,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         long_tap_timer = 1;
         layer_on(_MARI);
+        LED_layer_set(7);
       } else {
         check_tap_and_send_key(SEND_MARI);
         layer_off(_MARI);
+        LED_default_set();
       }
       return false;
       break;
@@ -344,9 +333,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         long_tap_timer = 1;
         layer_on(_KANAN);
+        LED_layer_set(2);
       } else {
         check_tap_and_send_key(SEND_KANAN);
         layer_off(_KANAN);
+        LED_default_set();
       }
       return false;
       break;
@@ -356,6 +347,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 void matrix_init_user(void) {
+  qk_ucis_start();
+  set_unicode_input_mode(UC_WIN);
+  /*
+  sethsv(aqours_color_h[2], aqours_color_s[2], aqours_color_v[2], (LED_TYPE *)&led[0]);
+  sethsv(aqours_color_h[7], aqours_color_s[7], aqours_color_v[7], (LED_TYPE *)&led[1]);
+  sethsv(aqours_color_h[1], aqours_color_s[1], aqours_color_v[1], (LED_TYPE *)&led[2]);
+  sethsv(aqours_color_h[5], aqours_color_s[5], aqours_color_v[5], (LED_TYPE *)&led[3]);
+  sethsv(aqours_color_h[8], aqours_color_s[8], aqours_color_v[8], (LED_TYPE *)&led[4]);
+  sethsv(aqours_color_h[6], aqours_color_s[6], aqours_color_v[6], (LED_TYPE *)&led[5]);
+  sethsv(aqours_color_h[0], aqours_color_s[0], aqours_color_v[0], (LED_TYPE *)&led[6]);
+  sethsv(aqours_color_h[4], aqours_color_s[4], aqours_color_v[4], (LED_TYPE *)&led[7]);
+  sethsv(aqours_color_h[3], aqours_color_s[3], aqours_color_v[3], (LED_TYPE *)&led[8]);
+
+  rgblight_set();
+  */
 }
 
 void matrix_scan_user(void) {

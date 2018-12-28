@@ -1,3 +1,3 @@
-ifndef QUANTUM_DIR
-	include ../../../../Makefile
-endif
+#ifndef QUANTUM_DIR
+#	include ../../../../Makefile
+#endif
