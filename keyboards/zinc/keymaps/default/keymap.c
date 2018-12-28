@@ -33,8 +33,31 @@ enum custom_keycodes {
   BACKLIT,
   KANA,
   EISU,
-  RGBRST
+  RGBRST,
+  AQOURS, //サンシャインぴっかぴかモード
 };
+
+#ifdef RGBLIGHT_ENABLE
+  //9色に変化するLEDのHSV各パラメータ
+  int aqours_h[] = { 26, 340, 150,   0, 199, 220,  53, 265, 322};
+  int aqours_s[] = {255, 165, 255, 255, 255, 350, 255, 255, 255};
+  int aqours_v[] = {255, 255, 255, 255, 255, 255, 255, 255, 255};
+  const int NEXT_COLOR_TIME = 2400; //次の色に切り替わるまでの時間
+  const int NEXT_CHANGE_TARGET_TIME = 100; //次のキーに色が伝播するまでの時間
+  bool aqours_mode = false;
+  int aqours_next_color_timer_count = 0;
+  int aqours_num  = 0;
+  int target_col = 0;
+
+  //keyのmatrixの位置とLEDの番号を紐づける
+  int combined_key_to_led[] =
+  {
+    0,1,2,3,4,5,
+    11,10,9,8,7,6,
+    12,13,14,15,16,17,
+    23,22,21,20,19,18
+  };
+#endif
 
 enum macro_keycodes {
   KC_SAMPLEMACRO,
@@ -147,14 +170,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = { \
    */
     [_ADJUST] =  LAYOUT_ortho_4x12( \
       _______, RESET,   RGBRST,  _______, _______, _______,                   _______, QWERTY,  COLEMAK, DVORAK,  _______, KC_INS, \
-      _______, RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, AG_NORM,                   AG_SWAP, KC_MINS, KC_EQL,  KC_PSCR, KC_SLCK, KC_PAUS,\
+       AQOURS, RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, AG_NORM,                   AG_SWAP, KC_MINS, KC_EQL,  KC_PSCR, KC_SLCK, KC_PAUS,\
       _______, RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD, _______,                   _______, _______, _______, _______, _______, _______,\
       _______, _______, _______, EISU,    EISU,    EISU,                      KANA,    KANA,    KC_HOME, KC_PGDN, KC_PGUP, KC_END\
       )
 };
 
 // define variables for reactive RGB
-bool TOG_STATUS = false;  
+bool TOG_STATUS = false;
 
 // Setting ADJUST layer RGB back to default
 void update_tri_layer_RGB(uint8_t layer1, uint8_t layer2, uint8_t layer3) {
@@ -212,7 +235,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-  
+
     case RAISE:
       if (record->event.pressed) {
         //not sure how to have keyboard check mode and set it to a variable, so my work around
@@ -281,7 +304,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-
+    case AQOURS:
+      #ifdef RGBLIGHT_ENABLE
+        if (record->event.pressed) {
+          aqours_mode = !aqours_mode;
+        }
+      #endif
+      break;
     case RGBRST:
       #ifdef RGBLIGHT_ENABLE
         if (record->event.pressed) {
@@ -295,6 +324,41 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
+#ifdef RGBLIGHT_ENABLE
+
+  void aqours_led(void) {
+    aqours_next_color_timer_count++;
+    //一定間隔で色が変化
+    if (aqours_next_color_timer_count > NEXT_COLOR_TIME) {
+      aqours_num++;
+      aqours_next_color_timer_count = 0;
+      target_col = 0;
+      if (aqours_num == sizeof(aqours_h) / sizeof(int)) {
+        aqours_num = 0;
+      }
+    }
+
+    //キー毎に時間差で色が変化していく
+    if (aqours_next_color_timer_count % NEXT_CHANGE_TARGET_TIME == 0) {
+      if (target_col < MATRIX_COLS) {
+        sethsv(aqours_h[aqours_num], aqours_s[aqours_num], aqours_v[aqours_num], (LED_TYPE *)&led[target_col]);
+        sethsv(aqours_h[aqours_num], aqours_s[aqours_num], aqours_v[aqours_num], (LED_TYPE *)&led[11 - target_col]);
+        sethsv(aqours_h[aqours_num], aqours_s[aqours_num], aqours_v[aqours_num], (LED_TYPE *)&led[12 + target_col]);
+        sethsv(aqours_h[aqours_num], aqours_s[aqours_num], aqours_v[aqours_num], (LED_TYPE *)&led[23 - target_col]);
+        target_col++;
+        rgblight_set();
+      }
+    }
+  }
+#endif
+
+void matrix_scan_user(void) {
+    #ifdef RGBLIGHT_ENABLE
+      if (aqours_mode) {
+        aqours_led();
+      }
+    #endif
+}
 
 void matrix_init_user(void) {
     #ifdef RGBLIGHT_ENABLE
@@ -302,5 +366,3 @@ void matrix_init_user(void) {
       RGB_current_config = rgblight_config;
     #endif
 }
-
-
