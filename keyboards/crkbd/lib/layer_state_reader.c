@@ -8,6 +8,7 @@
 #define L_RAISE 16
 #define L_ADJUST 65536
 #define L_ADJUST_TRI 65560
+#define L_LOCK     (2 << (5 - 1))
 
 char layer_state_str[24];
 
@@ -20,6 +21,8 @@ const char *read_layer_state(void) {
   case L_RAISE:
     snprintf(layer_state_str, sizeof(layer_state_str), "Layer: Raise");
     break;
+  case L_LOCK:
+    return "CATLOCKED";
   case L_LOWER:
     snprintf(layer_state_str, sizeof(layer_state_str), "Layer: Lower");
     break;

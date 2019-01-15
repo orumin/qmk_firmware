@@ -6,10 +6,10 @@
 BOOTMAGIC_ENABLE = no       # Virtual DIP switch configuration(+1000)
 MOUSEKEY_ENABLE = no       # Mouse keys(+4700)
 EXTRAKEY_ENABLE = yes       # Audio control and System control(+450)
-CONSOLE_ENABLE = no         # Console for debug(+400)
+CONSOLE_ENABLE = yes         # Console for debug(+400)
 COMMAND_ENABLE = no        # Commands for debug and configuration
 NKRO_ENABLE = no            # Nkey Rollover - if this doesn't work, see here: https://github.com/tmk/tmk_keyboard/wiki/FAQ#nkro-doesnt-work
-BACKLIGHT_ENABLE = no      # Enable keyboard backlight functionality
+BACKLIGHT_ENABLE = yes      # Enable keyboard backlight functionality
 MIDI_ENABLE = no            # MIDI controls
 AUDIO_ENABLE = no           # Audio output on port C6
 UNICODE_ENABLE = no         # Unicode
@@ -26,7 +26,7 @@ define ZINC_CUSTOMISE_MSG
 endef
 
 # Zinc keyboard customize
-LED_BACK_ENABLE = no        # LED backlight (Enable SK6812mini backlight)
+LED_BACK_ENABLE = yes        # LED backlight (Enable SK6812mini backlight)
 LED_UNDERGLOW_ENABLE = no   # LED underglow (Enable WS2812 RGB underlight)
 LED_ANIMATIONS = yes        # LED animations
 IOS_DEVICE_ENABLE = no      # connect to IOS device (iPad,iPhone)
@@ -64,10 +64,10 @@ endif
 ifeq ($(strip $(LED_BACK_ENABLE)), yes)
   RGBLIGHT_ENABLE = yes
   OPT_DEFS += -DRGBLED_BACK
-  ifeq ($(strip $(LED_UNDERGLOW_ENABLE)), yes)
-    $(eval $(call ZINC_CUSTOMISE_MSG))
-    $(error LED_BACK_ENABLE and LED_UNDERGLOW_ENABLE both 'yes')
-  endif
+#  ifeq ($(strip $(LED_UNDERGLOW_ENABLE)), yes)
+#    $(eval $(call ZINC_CUSTOMISE_MSG))
+#    $(error LED_BACK_ENABLE and LED_UNDERGLOW_ENABLE both 'yes')
+#  endif
 else ifeq ($(strip $(LED_UNDERGLOW_ENABLE)), yes)
   RGBLIGHT_ENABLE = yes
 else

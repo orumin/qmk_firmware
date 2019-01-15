@@ -36,3 +36,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    //#define RGBLIGHT_EFFECT_RGB_TEST
    //#define RGBLIGHT_EFFECT_ALTERNATING
 #endif
+
+#define BACKLIGHT_LEVELS 5
+#define RGBLIGHT_EFFECT_SNAKE_LENGTH 4
+#define BREATHING_PERIOD 2
+#define RGBLIGHT_LIMIT_VAL 200
+#define RGBLIGHT_HUE_STEP 10
+#define RGBLIGHT_SAT_STEP 17
+#define RGBLIGHT_VAL_STEP 17

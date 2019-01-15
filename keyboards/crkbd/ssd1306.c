@@ -4,6 +4,12 @@
 #include "i2c.h"
 #include <string.h>
 #include "print.h"
+#ifdef COMPILE_NO_MIKU
+#include "glcdfont.c"
+#endif
+#ifdef COMPILE_MIKU
+#include "glcdfont_miku.c"
+#endif
 #ifdef ADAFRUIT_BLE_ENABLE
 #include "adafruit_ble.h"
 #endif
@@ -13,14 +19,24 @@
 #include "sendchar.h"
 #include "timer.h"
 
-static const unsigned char font[] PROGMEM;
+//static const unsigned char font[] PROGMEM;
 
 //static uint16_t last_battery_update;
 //static uint32_t vbat;
 //#define BatteryUpdateInterval 10000 /* milliseconds */
-#define ScreenOffInterval 300000 /* milliseconds */
+
+// 'last_flush' is declared as uint16_t,
+// so this must be less than 65535
+#define ScreenOffInterval 60000 /* milliseconds */
+#if DEBUG_TO_SCREEN
+static uint8_t displaying;
+#endif
 static uint16_t last_flush;
+static int font_num = 0;
+static int shutter = 0;
 static bool overwrite_mode = false;
+
+static bool force_dirty = true;
 static bool progmem_mode = false;
 
 // Write command sequence.
@@ -106,11 +122,20 @@ done:
 void set_overwrite_mode (bool value) {
   overwrite_mode = value;
 }
+<<<<<<< HEAD
 
 void set_progmem_mode (bool value) {
   progmem_mode = value;
 }
 
+=======
+void set_font_num (int value) {
+  font_num = value;
+}
+void set_shutter(int value) {
+  shutter = value;
+}
+>>>>>>> a3ac06ebe3aeae472d504d628005b001a99a769e
 bool iota_gfx_init(bool rotate) {
   bool success = false;
 
@@ -198,7 +223,16 @@ static inline void matrix_write_byte(struct CharacterMatrix *matrix, uint8_t byt
 }
 
 static inline void matrix_write_char(struct CharacterMatrix *matrix, uint8_t c) {
+<<<<<<< HEAD
   const uint8_t *glyph = font + c * FontWidth;
+=======
+  #ifdef COMPILE_NO_MIKU
+    const uint8_t *glyph = font[font_num] + c * FontWidth;
+  #endif
+  #ifdef COMPILE_MIKU
+    const uint8_t *glyph = font[font_num][shutter] + c * FontWidth;
+  #endif
+>>>>>>> a3ac06ebe3aeae472d504d628005b001a99a769e
   for (uint8_t glyphCol = 0; glyphCol < FontWidth; ++glyphCol) {
     uint8_t colBits = pgm_read_byte(glyph + glyphCol);
     matrix_write_byte(matrix, colBits);
@@ -206,7 +240,16 @@ static inline void matrix_write_char(struct CharacterMatrix *matrix, uint8_t c) 
 }
 
 static inline void matrix_write_char_delimited(struct CharacterMatrix *matrix, uint8_t c, uint8_t from, uint8_t width) {
+<<<<<<< HEAD
   const uint8_t *glyph = font + c * FontWidth;
+=======
+  #ifdef COMPILE_NO_MIKU
+    const uint8_t *glyph = font[font_num] + c * FontWidth;
+  #endif
+  #ifdef COMPILE_MIKU
+    const uint8_t *glyph = font[font_num][shutter] + c * FontWidth;
+  #endif
+>>>>>>> a3ac06ebe3aeae472d504d628005b001a99a769e
   for (; width--; ++from) {
     uint8_t colBits = pgm_read_byte(glyph + from);
     matrix_write_byte(matrix, colBits);
@@ -231,20 +274,32 @@ void matrix_return(struct CharacterMatrix *matrix) {
   matrix->cursor = &matrix->display[cursor_row][0];
 }
 
+<<<<<<< HEAD
 void matrix_write(struct CharacterMatrix *matrix, const char *data) {
   char ch;
   while ((ch = progmem_mode ? pgm_read_byte(data) : *data)) {
     matrix_write_char(matrix, ch);
+=======
+void matrix_write(struct CharacterMatrix *matrix, const  char  *data) {
+  const  char  *end = data + 20;//strlen(data);
+  while (data < end) {
+    matrix_write_char(matrix, *data);
+>>>>>>> a3ac06ebe3aeae472d504d628005b001a99a769e
     ++data;
   }
 }
 
+<<<<<<< HEAD
 void matrix_write_range(struct CharacterMatrix *matrix, const char *data, uint8_t from, uint8_t width) {
+=======
+void matrix_write_range(struct CharacterMatrix *matrix, const  char  *data, uint8_t from, uint8_t width) {
+>>>>>>> a3ac06ebe3aeae472d504d628005b001a99a769e
   data += from / FontWidth;
   from %= FontWidth;
 
   if (from) {
     if (width <= FontWidth) {
+<<<<<<< HEAD
       matrix_write_char_delimited(matrix, progmem_mode ? pgm_read_byte(data) : *data, from, width);
       return;
     } else {
@@ -262,15 +317,43 @@ void matrix_write_range(struct CharacterMatrix *matrix, const char *data, uint8_
 
   if (width) {
     matrix_write_char_delimited(matrix, progmem_mode ? pgm_read_byte(data) : *data, 0, width);
+=======
+      matrix_write_char_delimited(matrix, *data, from, width);
+      return;
+    } else {
+      matrix_write_char_delimited(matrix, *data, from, FontWidth - from);
+      width -= FontWidth - from;
+      data++;
+    }
+>>>>>>> a3ac06ebe3aeae472d504d628005b001a99a769e
+  }
+
+  while (width >= FontWidth) {
+    matrix_write_char(matrix, *data);
+    width -= FontWidth;
+    data++;
+  }
+
+  if (width) {
+    matrix_write_char_delimited(matrix, *data, 0, width);
   }
 }
 
+void matrix_write_ln(struct CharacterMatrix *matrix, const  char  *data) {
+  matrix_write(matrix, data);
+  matrix_newline(matrix);
+}
+
+<<<<<<< HEAD
 void matrix_write_ln(struct CharacterMatrix *matrix, const char *data) {
   matrix_write(matrix, data);
   matrix_newline(matrix);
 }
 
 void matrix_write_range_ln(struct CharacterMatrix *matrix, const char *data, uint8_t from, uint8_t width) {
+=======
+void matrix_write_range_ln(struct CharacterMatrix *matrix, const  char  *data, uint8_t from, uint8_t width) {
+>>>>>>> a3ac06ebe3aeae472d504d628005b001a99a769e
   matrix_write_range(matrix, data, from, width);
   matrix_newline(matrix);
 }
@@ -340,10 +423,17 @@ void iota_gfx_task(void) {
 
   if (display.dirty || background.dirty) {
     iota_gfx_flush();
+    force_dirty = false;
   }
 
   if (timer_elapsed(last_flush) > ScreenOffInterval) {
     iota_gfx_off();
   }
 }
+
+bool process_record_gfx(uint16_t keycode, keyrecord_t *record) {
+  force_dirty = true;
+  return true;
+}
+
 #endif

@@ -189,7 +189,7 @@ int serial_transaction(int master_changed) {
     int ret=serial_update_buffers();
 #endif
     if (ret ) {
-        if(ret==2) RXLED1;
+      //  if(ret==2)RXLED1;
         return 1;
     }
     RXLED0;
@@ -241,7 +241,7 @@ uint8_t matrix_master_scan(void) {
     if( serial_transaction(mchanged) ) {
 #endif
         // turn on the indicator led when halves are disconnected
-        TXLED1;
+        //TXLED1;
 
         error_count++;
 

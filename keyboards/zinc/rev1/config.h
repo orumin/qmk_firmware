@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DEVICE_VER      0x0001
 #define MANUFACTURER    monksoffunk
 #define PRODUCT         zinc rev.1
-#define DESCRIPTION     A split keyboard 
+#define DESCRIPTION     A split keyboard
 
 
 #define PREVENT_STUCK_MODIFIERS
@@ -91,23 +91,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef IOS_DEVICE_ENABLE
   #if RGBLED_NUM <= 6
-    #define RGBLIGHT_LIMIT_VAL 255
+    //#define RGBLIGHT_LIMIT_VAL 255
   #else
     #if RGBLED_NUM <= 16
-      #define RGBLIGHT_LIMIT_VAL 130
+      //#define RGBLIGHT_LIMIT_VAL 130
     #else
-      #define RGBLIGHT_LIMIT_VAL 120
+      //#define RGBLIGHT_LIMIT_VAL 120
     #endif
   #endif
   #define RGBLIGHT_VAL_STEP 17
 #else
   #if RGBLED_NUM <= 6
-    #define RGBLIGHT_LIMIT_VAL 90
+    //#define RGBLIGHT_LIMIT_VAL 90
   #else
     #if RGBLED_NUM <= 16
-      #define RGBLIGHT_LIMIT_VAL 45
+      //#define RGBLIGHT_LIMIT_VAL 45
     #else
-      #define RGBLIGHT_LIMIT_VAL 35
+      //#define RGBLIGHT_LIMIT_VAL 35
     #endif
   #endif
   #define RGBLIGHT_VAL_STEP 4

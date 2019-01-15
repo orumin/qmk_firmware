@@ -23,6 +23,20 @@ enum layer_number {
     _ADJUST
 };
 
+#define X 0
+#define Y 1
+#define KC_LPLAIN  RGB_MODE_PLAIN
+#define KC_LBREATHE  RGB_MODE_BREATHE
+#define KC_LRAINBOW  RGB_MODE_RAINBOW
+#define KC_LSWIRL  RGB_MODE_SWIRL
+#define KC_LSNAKE  RGB_MODE_SNAKE
+#define KC_LNIGHT  RGB_MODE_KNIGHT
+#define KC_LXMAS  RGB_MODE_XMAS
+#define KC_LGRADIENT  RGB_MODE_GRADIENT
+#define KC_LTEST RGB_MODE_RGBTEST
+
+//#define KC_LAQOURS_N AQOURS_N
+#define KC_LCATLOCK1 CAT_LOCK1
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
   COLEMAK,
@@ -33,7 +47,12 @@ enum custom_keycodes {
   BACKLIT,
   KANA,
   EISU,
-  RGBRST
+  RGBRST,
+  AQOURS_NEXT,
+  AQOURS_PRE,
+  AQOURS_AUTO,
+  CROSS,
+  CROSS_END
 };
 
 enum macro_keycodes {
@@ -43,6 +62,26 @@ enum macro_keycodes {
 //Macros
 #define M_SAMPLE M(KC_SAMPLEMACRO)
 
+int aqours_index = -1;
+//int aqours_color_h[] = { 26, 340, 120,   0, 199,   0, 53, 280, 322};
+int aqours_color_h[] = { 26, 340, 150,   0, 199, 220, 53, 265, 322};
+int aqours_color_s[] = {255, 165, 255, 255, 255, 350, 255, 255, 255};
+int aqours_color_v[] = {255, 255, 255, 255, 255, 255, 200, 255, 255};
+int aqours_led_anim_index = 0;
+int push_key_index[] = {0, 0};
+int CROSS_led_anim_index = -1;
+bool aqours_mode;
+bool aqours_auto_mode = false;
+bool CROSS_mode = false;
+
+//keyのmatrixの位置とLEDの番号を紐づける
+int combined_key_to_led[] =
+{
+  0,1,2,3,4,5,
+  11,10,9,8,7,6,
+  12,13,14,15,16,17,
+  23,22,21,20,19,18
+};
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = { \
   /* Qwerty
    * ,-----------------------------------------.             ,-----------------------------------------.
@@ -55,13 +94,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = { \
    * | Esc  |ADJUST| Win  | Alt  |LOWER |Space |             | Space| RAISE| Left | Down |  Up  | Right|
    * `-----------------------------------------'             `-----------------------------------------'
    */
+   /*
 [_QWERTY] = LAYOUT_ortho_4x12(
       KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                      KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC, \
       KC_LCTL, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                      KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, \
       KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                      KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT , \
       KC_ESC,  ADJUST,  KC_LGUI, KC_LALT, LOWER,   KC_SPC,                    KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT \
       ),
-
+*/
+[_QWERTY] = LAYOUT_ortho_4x12(
+      AQOURS_NEXT,  KC_Q,    KC_W,    KC_E,    KC_E,    KC_E,                      KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC, \
+      AQOURS_PRE, KC_A,    KC_S,    KC_D,    KC_E,    KC_E,                      KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, \
+      AQOURS_AUTO, KC_Z,    KC_X,    KC_C,    KC_E,    KC_E,                      KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT , \
+      CROSS,  CROSS,  CROSS_END, _RAISE, LOWER,   KC_E,                    AQOURS_NEXT,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT \
+      ),
   /* Colemak
    * ,-----------------------------------------.             ,-----------------------------------------.
    * | Tab  |   Q  |   W  |   F  |   P  |   G  |             |   J  |   L  |   U  |   Y  |   ;  | Bksp |
@@ -146,7 +192,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = { \
    * `-----------------------------------------'             `-----------------------------------------'
    */
     [_ADJUST] =  LAYOUT_ortho_4x12( \
-      _______, RESET,   RGBRST,  _______, _______, _______,                   _______, QWERTY,  COLEMAK, DVORAK,  _______, KC_INS, \
+      _______, RESET,   RGBRST,  KC_LPLAIN, KC_LRAINBOW, KC_LSNAKE,           KC_LNIGHT, KC_LXMAS,  KC_LGRADIENT, KC_LSWIRL,  _______, KC_INS, \
       _______, RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, AG_NORM,                   AG_SWAP, KC_MINS, KC_EQL,  KC_PSCR, KC_SLCK, KC_PAUS,\
       _______, RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD, _______,                   _______, _______, _______, _______, _______, _______,\
       _______, _______, _______, EISU,    EISU,    EISU,                      KANA,    KANA,    KC_HOME, KC_PGDN, KC_PGUP, KC_END\
@@ -154,7 +200,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = { \
 };
 
 // define variables for reactive RGB
-bool TOG_STATUS = false;  
+bool TOG_STATUS = false;
 
 // Setting ADJUST layer RGB back to default
 void update_tri_layer_RGB(uint8_t layer1, uint8_t layer2, uint8_t layer3) {
@@ -212,7 +258,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-  
+
     case RAISE:
       if (record->event.pressed) {
         //not sure how to have keyboard check mode and set it to a variable, so my work around
@@ -291,8 +337,208 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
       #endif
       break;
+
+      //オタクな光り方
+      case AQOURS_NEXT:
+        #ifdef RGBLIGHT_ENABLE
+          if (record->event.pressed) {
+            if (!aqours_mode) {
+                eeconfig_update_rgblight_default();
+                rgblight_enable();
+                RGB_current_config = rgblight_config;
+            }
+            aqours_auto_mode = false;
+            aqours_index++;
+            if (aqours_index == 9) {
+              aqours_index = 0;
+            }
+            aqours_led_anim_index = 0;
+            aqours_mode = 1;
+          }
+      #endif
+      break;
+      //オタクな光り方
+      case AQOURS_PRE:
+        #ifdef RGBLIGHT_ENABLE
+          if (record->event.pressed) {
+            if (!aqours_mode) {
+                eeconfig_update_rgblight_default();
+                rgblight_enable();
+                RGB_current_config = rgblight_config;
+            }
+            aqours_auto_mode = false;
+            aqours_index += -1;
+            if (aqours_index < 0) {
+              aqours_index = 8;
+            }
+            aqours_led_anim_index = 0;
+            aqours_mode = 1;
+          }
+        #endif
+        break;
+      case AQOURS_AUTO:
+        if (record->event.pressed) {
+          if (!aqours_mode) {
+              eeconfig_update_rgblight_default();
+              rgblight_enable();
+              RGB_current_config = rgblight_config;
+          }
+          aqours_auto_mode = true;
+          aqours_mode = 1;
+        }
+        break;
+      //サザンクロス
+      case CROSS:
+        #ifdef RGBLIGHT_ENABLE
+          if (record->event.pressed) {
+            CROSS_mode = 1;
+          }
+        #endif
+        break;
+      //サザンクロスおわり
+      case CROSS_END:
+        #ifdef RGBLIGHT_ENABLE
+          if (record->event.pressed) {
+            CROSS_mode = 0;
+          }
+        #endif
+        break;
+  }
+  if (CROSS_mode == 1) {
+    if (record->event.pressed) {
+      for (uint8_t c = 0; c < MATRIX_COLS; c++) {
+       for (uint8_t r = 0; r < MATRIX_ROWS; r++) {
+         if (matrix_is_on(r, c)) {
+           if (c <= MATRIX_COLS) {
+               if(is_master) {
+                 push_key_index[X] = c;
+                 push_key_index[Y] = r;
+                 CROSS_led_anim_index = 0;
+               }
+           } else {
+               if(!is_master) {
+                 push_key_index[X] = c-(MATRIX_COLS);
+                 push_key_index[Y] = r;
+                 CROSS_led_anim_index = 0;
+               }
+           }
+           rgblight_set();
+           break;
+         }
+       }
+     }
+    }
   }
   return true;
+}
+
+
+int cross_led_lag_count = 0;
+int cross_led_color_lag_count = 0;
+int cross_state[24];
+void CROSS_led(void) {
+  if (CROSS_led_anim_index > -1) {
+    cross_led_lag_count++;
+    if (cross_led_lag_count > 50) {
+      cross_led_lag_count = 0;
+
+      int key_num;
+      //上
+      if (push_key_index[Y] - CROSS_led_anim_index >= 0) {
+          key_num = (push_key_index[Y] - CROSS_led_anim_index) * MATRIX_COLS + push_key_index[X];
+          cross_state[combined_key_to_led[key_num]] = 1;
+      }
+      //下
+      if (push_key_index[Y] + CROSS_led_anim_index < 4) {
+          key_num = (push_key_index[Y] + CROSS_led_anim_index) * MATRIX_COLS + push_key_index[X];
+          cross_state[combined_key_to_led[key_num]] = 1;
+      }
+      //左
+      if (push_key_index[X] - CROSS_led_anim_index >= 0) {
+          key_num = (push_key_index[Y]) * MATRIX_COLS + push_key_index[X] - CROSS_led_anim_index;
+          cross_state[combined_key_to_led[key_num]] = 1;
+      }
+      //右
+      if (push_key_index[X] + CROSS_led_anim_index < MATRIX_COLS) {
+          key_num = (push_key_index[Y]) * MATRIX_COLS + push_key_index[X] + CROSS_led_anim_index;
+          cross_state[combined_key_to_led[key_num]] = 1;
+      }
+
+      CROSS_led_anim_index++;
+      if (CROSS_led_anim_index > 6) {
+        CROSS_led_anim_index = -1;
+      }
+    }
+  }
+
+  cross_led_color_lag_count++;
+  if (cross_led_color_lag_count == 3) {
+    cross_led_color_lag_count = 0;
+    for (int i=0;i<24;i++) {
+        if(cross_state[i] > 0 && cross_state[i] < 1080) {
+          cross_state[i]+=8;
+          sethsv((cross_state[i]+i*60)%360, 255, 255, (LED_TYPE *)&led[i]);
+        }
+     }
+     rgblight_set();
+   }
+}
+
+int aqours_led_timer_count = 0;
+int aqours_led_auto_timer_count = 0;
+void aqours_led(void) {
+  if (aqours_auto_mode) {
+    aqours_led_auto_timer_count++;
+    if (aqours_led_auto_timer_count > 1600) {
+       aqours_led_auto_timer_count= 0;
+       aqours_index++;
+       aqours_led_anim_index = 0;
+       if (aqours_index == 9) {
+         aqours_index = 0;
+       }
+    }
+  }
+  aqours_led_timer_count++;
+  if (aqours_led_timer_count > 100) {
+    aqours_led_timer_count = 0;
+    if (aqours_led_anim_index < 6) {
+      sethsv(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index]-30, (LED_TYPE *)&led[aqours_led_anim_index]);
+      sethsv(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index]-20, (LED_TYPE *)&led[11 - aqours_led_anim_index]);
+      sethsv(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index]-10, (LED_TYPE *)&led[12 + aqours_led_anim_index]);
+      sethsv(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index], (LED_TYPE *)&led[23 - aqours_led_anim_index]);
+      aqours_led_anim_index++;
+      rgblight_set();
+    }
+  }
+}
+
+
+void matrix_scan_user(void) {
+
+   for (uint8_t c = 0; c < MATRIX_COLS; c++) {
+    for (uint8_t r = 0; r < MATRIX_ROWS; r++) {
+      if (matrix_is_on(r, c)) {
+        if (c <= MATRIX_COLS) {
+            if(is_master) {
+              sethsv(20+5*(MATRIX_COLS*r+c), 255, 255, (LED_TYPE *)&led[combined_key_to_led[MATRIX_COLS*r+c]]);
+            }
+        } else {
+            if(!is_master) {
+              int row_num = c-(MATRIX_COLS);
+              sethsv(20+5*(MATRIX_COLS*r+row_num), 255, 255, (LED_TYPE *)&led[combined_key_to_led[MATRIX_COLS*r+c]]);
+            }
+        }
+        rgblight_set();
+        break;
+      }
+    }
+  }
+   if (aqours_mode) {
+     aqours_led();
+   }
+   if (CROSS_mode) {
+     CROSS_led();
+   }
 }
 
 
@@ -302,5 +548,3 @@ void matrix_init_user(void) {
       RGB_current_config = rgblight_config;
     #endif
 }
-
-
