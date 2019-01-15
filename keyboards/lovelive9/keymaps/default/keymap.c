@@ -30,12 +30,6 @@ const uint32_t PROGMEM unicode_map[]=
 };
 */
 
-const qk_ucis_symbol_t ucis_symbol_table[] = UCIS_TABLE
-(
- UCIS_SYM("poop", 0x1f4a9),
- UCIS_SYM("rofl", 0x1f923),
- UCIS_SYM("kiss", 0x1f619)
-);
 enum Layer
 {
   _QWERTY,
@@ -49,7 +43,9 @@ enum Layer
   _MARI,
   _KANAN,
   _RUBY_SUB1,
-  _RUBY_SUB2
+  _RUBY_SUB2,
+  _RUBY_SUB3,
+  _SCHOOL_IDOL_FESTIVAL
 };
 
 #define SEND_DIA 100
@@ -62,8 +58,10 @@ enum Layer
 #define SEND_MARI 107
 #define SEND_KANAN 108
 
-#define _RUBY_SUB1 12
-#define _RUBY_SUB2 13
+//#define _RUBY_SUB1 112
+//#define _RUBY_SUB2 113
+//#define _RUBY_SUB3 114
+//#define _SCHOOL_IDOL_FESTIVAL 115
 //#define _CATLOCK 5
 
 enum custom_keycodes {
@@ -75,10 +73,13 @@ enum custom_keycodes {
   RUBY,
   RUBY_SUB1,
   RUBY_SUB2,
+  RUBY_SUB3,
   YOHANE,
   RIKO,
   MARI,
-  KANAN
+  KANAN,
+  TO_SCHOOL_IDOL_FESTIVAL,
+  RETURN_SCHOOL_IDOL_FESTIVAL
 };
 
 #define _______ KC_TRNS
@@ -88,7 +89,7 @@ int long_tap_timer;
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT(
     //KC_1, KC_2, KC_3,KC_4, KC_5, KC_6, KC_7, KC_8, KC_9
-    KC_P, KC_O, KC_SPC, KC_BSPC, KC_ENT, YOHANE, RIKO, MARI, KANAN
+    DIA, YOU, TIKA, ZURA, RUBY, YOHANE, RIKO, MARI, KANAN
 //LTはカスタムキーコードも使えないので没
     //LT(_DIA, KC_A), LT(_YOU, KC_B), LT(_TIKA, KC_C), LT(_ZURA, SEND_ZURA), LT(_RUBY, SEND_RUBY), LT(_YOHANE, SEND_YOHANE), LT(_RIKO, SEND_RIKO), LT(_MARI, SEND_MARI), LT(_KANAN, SEND_KANAN)
   ),
@@ -108,7 +109,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_V, KC_W, KC_X, ZURA, KC_Y, KC_Z, KC_M, KC_N, KC_LSFT
   ),
 
-//推しをたくさん押せるようにルビーちゃんには複数のレイヤー設定
+  //推しをたくさん押せるようにルビーちゃんには複数のレイヤー設定
   [_RUBY] = LAYOUT(
     KC_CIRC, KC_LPRN, KC_QUOT, RUBY_SUB1, RUBY, RUBY_SUB2, KC_LCBR, KC_EXLM, KC_LSFT
   ),
@@ -117,6 +118,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   [_RUBY_SUB2] = LAYOUT(
     KC_TILD, KC_DLR, KC_LBRC, RUBY_SUB1, RUBY, RUBY_SUB2, KC_PERC, KC_RBRC, KC_LSFT
+  ),
+  [_RUBY_SUB3] = LAYOUT(
+    TO_SCHOOL_IDOL_FESTIVAL, KC_DLR, KC_LBRC, RUBY_SUB1, RUBY, RUBY_SUB2, KC_PERC, KC_RBRC, RETURN_SCHOOL_IDOL_FESTIVAL
   ),
 
   [_YOHANE] = LAYOUT(
@@ -133,7 +137,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_KANAN] = LAYOUT(
     KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, KC_ENT, KC_BSPC, KC_AMPR, KC_KANJI, KANAN
-  )
+  ),
+  [_SCHOOL_IDOL_FESTIVAL] = LAYOUT(
+    KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9
+  ),
 };
 
 void check_tap_and_send_key(int MEMBER) {
@@ -194,8 +201,6 @@ void LED_default_set(void) {
 
 
 void LED_layer_set(int aqours_index) {
-
-
   //i2c_init();
   //i2c_send(0xb0, (uint8_t*)led, 3 * RGBLED_NUM);
   for (int c = 0; c < 9; c++) {
@@ -205,7 +210,9 @@ void LED_layer_set(int aqours_index) {
   rgblight_set();
 }
 
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+
   switch (keycode) {
 
     case DIA:
@@ -272,10 +279,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-
     case RUBY_SUB1:
       if (record->event.pressed) {
         layer_on(_RUBY_SUB1);
+        if (IS_LAYER_ON(_RUBY_SUB1) && IS_LAYER_ON(_RUBY_SUB2)) {
+          layer_on(_RUBY_SUB3);
+        } else {
+          layer_off(_RUBY_SUB3);
+        }
       } else {
         layer_off(_RUBY_SUB1);
       }
@@ -284,6 +295,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case RUBY_SUB2:
       if (record->event.pressed) {
         layer_on(_RUBY_SUB2);
+        if (IS_LAYER_ON(_RUBY_SUB1) && IS_LAYER_ON(_RUBY_SUB2)) {
+          layer_on(_RUBY_SUB3);
+        } else {
+          layer_off(_RUBY_SUB3);
+        }
       } else {
         layer_off(_RUBY_SUB2);
       }
@@ -342,13 +358,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
       break;
 
+    case TO_SCHOOL_IDOL_FESTIVAL:
+      if (record->event.pressed) {
+        LED_default_set();
+        layer_on(_SCHOOL_IDOL_FESTIVAL);
+      }
+      return false;
+      break;
+    case RETURN_SCHOOL_IDOL_FESTIVAL:
+      if (record->event.pressed) {
+        layer_off(_SCHOOL_IDOL_FESTIVAL);
+      }
+      return false;
+      break;
   }
 
   return true;
 }
 void matrix_init_user(void) {
-  qk_ucis_start();
-  set_unicode_input_mode(UC_WIN);
+  //qk_ucis_start();
+  //set_unicode_input_mode(UC_WIN);
   /*
   sethsv(aqours_color_h[2], aqours_color_s[2], aqours_color_v[2], (LED_TYPE *)&led[0]);
   sethsv(aqours_color_h[7], aqours_color_s[7], aqours_color_v[7], (LED_TYPE *)&led[1]);
@@ -365,6 +394,7 @@ void matrix_init_user(void) {
 }
 
 void matrix_scan_user(void) {
+
   if (long_tap_timer > 0) {
     long_tap_timer++;
   }

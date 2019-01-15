@@ -62,9 +62,10 @@ AUDIO_ENABLE = no           # Audio output on port C6
 UNICODE_ENABLE = yes         # Unicode
 BLUETOOTH_ENABLE = no       # Enable Bluetooth with the Adafruit EZ-Key HID
 RGBLIGHT_ENABLE = yes        # Enable WS2812 RGB underlight.
-UNICODE_ENABLE = no
-UNICODEMAP_ENABLE = no
-UCIS_ENABLE = yes
+NKRO_ENABLE = yes
+#UNICODE_ENABLE = no
+#UNICODEMAP_ENABLE = no
+#UCIS_ENABLE = yes
 # Zinc keyboard customize
 LED_BACK_ENABLE = yes        # LED backlight (Enable SK6812mini backlight)
 LED_UNDERGLOW_ENABLE = yes   # LED underglow (Enable WS2812 RGB underlight)
