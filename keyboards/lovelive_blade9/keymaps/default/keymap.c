@@ -89,57 +89,9 @@ int long_tap_timer;
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT(
     //KC_1, KC_2, KC_3,KC_4, KC_5, KC_6, KC_7, KC_8, KC_9
-    DIA, YOU, TIKA, ZURA, RUBY, YOHANE, RIKO, MARI, KANAN
+    TIKA, YOU, TIKA, ZURA, RUBY, YOHANE, RIKO, MARI, KANAN, RGB_TOG, RGB_TOG
 //LTはカスタムキーコードも使えないので没
     //LT(_DIA, KC_A), LT(_YOU, KC_B), LT(_TIKA, KC_C), LT(_ZURA, SEND_ZURA), LT(_RUBY, SEND_RUBY), LT(_YOHANE, SEND_YOHANE), LT(_RIKO, SEND_RIKO), LT(_MARI, SEND_MARI), LT(_KANAN, SEND_KANAN)
-  ),
-  [_DIA] = LAYOUT(
-    DIA, KC_A, KC_B, KC_C, KC_D, KC_E, KC_F, KC_G, KC_LSFT
-  ),
-
-  [_YOU] = LAYOUT(
-    KC_H, YOU, KC_I, KC_J, KC_K, KC_L, KC_M, KC_N, KC_LSFT
-  ),
-
-  [_TIKA] = LAYOUT(
-    KC_O, KC_P, TIKA, KC_Q, KC_R, KC_S, KC_T, KC_U, KC_LSFT
-  ),
-
-  [_ZURA] = LAYOUT(
-    KC_V, KC_W, KC_X, ZURA, KC_Y, KC_Z, KC_M, KC_N, KC_LSFT
-  ),
-
-  //推しをたくさん押せるようにルビーちゃんには複数のレイヤー設定
-  [_RUBY] = LAYOUT(
-    KC_CIRC, KC_LPRN, KC_QUOT, RUBY_SUB1, RUBY, RUBY_SUB2, KC_LCBR, KC_EXLM, KC_LSFT
-  ),
-  [_RUBY_SUB1] = LAYOUT(
-    KC_RCBR, KC_AT, KC_PIPE, RUBY_SUB1, RUBY, RUBY_SUB2, KC_HASH, KC_EQL, KC_LSFT
-  ),
-  [_RUBY_SUB2] = LAYOUT(
-    KC_TILD, KC_DLR, KC_LBRC, RUBY_SUB1, RUBY, RUBY_SUB2, KC_PERC, KC_RBRC, KC_LSFT
-  ),
-  [_RUBY_SUB3] = LAYOUT(
-    TO_SCHOOL_IDOL_FESTIVAL, KC_DLR, KC_LBRC, RUBY_SUB1, RUBY, RUBY_SUB2, KC_PERC, KC_RBRC, RETURN_SCHOOL_IDOL_FESTIVAL
-  ),
-
-  [_YOHANE] = LAYOUT(
-    KC_0, KC_1, KC_2, KC_3, KC_4, YOHANE, KC_5, KC_6, KC_LSFT
-  ),
-
-  [_RIKO] = LAYOUT(
-    KC_7, KC_8, KC_9, KC_PLUS, KC_MINS, KC_ASTR, RIKO, KC_SLSH, KC_LSFT
-  ),
-
-  [_MARI] = LAYOUT(
-    KC_TAB, KC_DEL, KC_COMM, KC_SPC, KC_ENT, KC_BSPC, KC_DOT, MARI, KC_LSFT
-  ),
-
-  [_KANAN] = LAYOUT(
-    KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, KC_ENT, KC_BSPC, KC_AMPR, KC_KANJI, KANAN
-  ),
-  [_SCHOOL_IDOL_FESTIVAL] = LAYOUT(
-    KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9
   ),
 };
 
@@ -184,7 +136,7 @@ int aqours_color_s[] = {255, 165, 255, 255, 255, 350, 255, 255, 255};
 int aqours_color_v[] = {255, 255, 255, 255, 255, 255, 200, 255, 255};
 
 void LED_default_set(void) {
-
+/*
   sethsv(aqours_color_h[2], aqours_color_s[2], aqours_color_v[2], (LED_TYPE *)&led[0]);
   sethsv(aqours_color_h[7], aqours_color_s[7], aqours_color_v[7], (LED_TYPE *)&led[1]);
   sethsv(aqours_color_h[1], aqours_color_s[1], aqours_color_v[1], (LED_TYPE *)&led[2]);
@@ -196,14 +148,14 @@ void LED_default_set(void) {
   sethsv(aqours_color_h[3], aqours_color_s[3], aqours_color_v[3], (LED_TYPE *)&led[8]);
 
   rgblight_set();
-
+*/
 }
 
 
 void LED_layer_set(int aqours_index) {
   //i2c_init();
   //i2c_send(0xb0, (uint8_t*)led, 3 * RGBLED_NUM);
-  for (int c = 0; c < 9; c++) {
+  for (int c = 0; c < 16; c++) {
   sethsv(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index], (LED_TYPE *)&led[c]);
     //rgblight_sethsv_noeeprom(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index]);
   }
@@ -217,157 +169,62 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     case DIA:
       if (record->event.pressed) {
-        long_tap_timer = 1;
-        layer_on(_DIA);
         LED_layer_set(3);
-      } else {
-        check_tap_and_send_key(SEND_DIA);
-        layer_off(_DIA);
-        LED_default_set();
       }
       return false;
       break;
 
     case YOU:
       if (record->event.pressed) {
-        long_tap_timer = 1;
-        layer_on(_YOU);
         LED_layer_set(4);
-      } else {
-        check_tap_and_send_key(SEND_YOU);
-        layer_off(_YOU);
-        LED_default_set();
       }
       return false;
       break;
 
     case TIKA:
       if (record->event.pressed) {
-        long_tap_timer = 1;
-        layer_on(_TIKA);
         LED_layer_set(0);
-      } else {
-        check_tap_and_send_key(SEND_TIKA);
-        layer_off(_TIKA);
-        LED_default_set();
       }
       return false;
       break;
 
     case ZURA:
       if (record->event.pressed) {
-        long_tap_timer = 1;
-        layer_on(_ZURA);
         LED_layer_set(6);
-      } else {
-        check_tap_and_send_key(SEND_ZURA);
-        layer_off(_ZURA);
-        LED_default_set();
       }
       return false;
       break;
 
     case RUBY:
       if (record->event.pressed) {
-        long_tap_timer = 1;
-        layer_on(_RUBY);
         LED_layer_set(8);
-      } else {
-        check_tap_and_send_key(SEND_RUBY);
-        layer_off(_RUBY);
-        LED_default_set();
       }
       return false;
       break;
-    case RUBY_SUB1:
-      if (record->event.pressed) {
-        layer_on(_RUBY_SUB1);
-        if (IS_LAYER_ON(_RUBY_SUB1) && IS_LAYER_ON(_RUBY_SUB2)) {
-          layer_on(_RUBY_SUB3);
-        } else {
-          layer_off(_RUBY_SUB3);
-        }
-      } else {
-        layer_off(_RUBY_SUB1);
-      }
-      return false;
-      break;
-    case RUBY_SUB2:
-      if (record->event.pressed) {
-        layer_on(_RUBY_SUB2);
-        if (IS_LAYER_ON(_RUBY_SUB1) && IS_LAYER_ON(_RUBY_SUB2)) {
-          layer_on(_RUBY_SUB3);
-        } else {
-          layer_off(_RUBY_SUB3);
-        }
-      } else {
-        layer_off(_RUBY_SUB2);
-      }
-      return false;
-      break;
-
     case YOHANE:
       if (record->event.pressed) {
-        long_tap_timer = 1;
-        layer_on(_YOHANE);
         LED_layer_set(5);
-      } else {
-        check_tap_and_send_key(SEND_YOHANE);
-        layer_off(_YOHANE);
-        LED_default_set();
       }
       return false;
       break;
 
     case RIKO:
       if (record->event.pressed) {
-        long_tap_timer = 1;
-        layer_on(_RIKO);
         LED_layer_set(1);
-      } else {
-        check_tap_and_send_key(SEND_RIKO);
-        layer_off(_RIKO);
-        LED_default_set();
       }
       return false;
       break;
 
     case MARI:
       if (record->event.pressed) {
-        long_tap_timer = 1;
-        layer_on(_MARI);
         LED_layer_set(7);
-      } else {
-        check_tap_and_send_key(SEND_MARI);
-        layer_off(_MARI);
-        LED_default_set();
       }
       return false;
       break;
 
     case KANAN:
       if (record->event.pressed) {
-        long_tap_timer = 1;
-        layer_on(_KANAN);
         LED_layer_set(2);
-      } else {
-        check_tap_and_send_key(SEND_KANAN);
-        layer_off(_KANAN);
-        LED_default_set();
-      }
-      return false;
-      break;
-
-    case TO_SCHOOL_IDOL_FESTIVAL:
-      if (record->event.pressed) {
-        LED_default_set();
-        layer_on(_SCHOOL_IDOL_FESTIVAL);
-      }
-      return false;
-      break;
-    case RETURN_SCHOOL_IDOL_FESTIVAL:
-      if (record->event.pressed) {
-        layer_off(_SCHOOL_IDOL_FESTIVAL);
       }
       return false;
       break;
@@ -376,6 +233,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 void matrix_init_user(void) {
+  LED_layer_set(3);
   //qk_ucis_start();
   //set_unicode_input_mode(UC_WIN);
   /*
@@ -395,7 +253,4 @@ void matrix_init_user(void) {
 
 void matrix_scan_user(void) {
 
-  if (long_tap_timer > 0) {
-    long_tap_timer++;
-  }
 }

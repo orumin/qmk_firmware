@@ -17,20 +17,21 @@
 #define BACKLIGHT_LEVELS 5
 #define RGBLIGHT_EFFECT_SNAKE_LENGTH 4
 #define BREATHING_PERIOD 2
-#define RGBLIGHT_LIMIT_VAL 255
+#define RGBLIGHT_LIMIT_VAL 155
 #define RGBLIGHT_HUE_STEP 10
 #define RGBLIGHT_SAT_STEP 17
 #define RGBLIGHT_VAL_STEP 17
 
-#define MATRIX_ROWS 9
+#define MATRIX_ROWS 11
 #define MATRIX_COLS 1
 
 #define NO_PIN 0xFF
-#define MATRIX_ROW_PINS { B4, B6, B2, D7, B1, F7, F6, F5, F4 }
+#define MATRIX_ROW_PINS { F4, F5, D4, C6, D7, E6, B4, B5, B6, B2, B3 }
+#define MATRIX_COL_PINS { }
 #define UNUSED_PINS
 
 /* COL2ROW, ROW2COL, or CUSTOM_MATRIX */
-#define DIODE_DIRECTION CUSTOM_MATRIX
+#define DIODE_DIRECTION ROW2COL
 
 /* ws2812 RGB LED */
 /* COL2ROW or ROW2COL */
@@ -40,7 +41,7 @@
 #define RGB_DI_PIN D3
 #define RGBLIGHT_TIMER
 //#define RGBLED_NUM 12    // Number of LEDs. see ./keymaps/default/config.h
-#define RGBLED_NUM 9    // Number of LEDs
+#define RGBLED_NUM 16    // Number of LEDs
 
 #define ws2812_PORTREG  PORTD
 #define ws2812_DDRREG   DDRD
