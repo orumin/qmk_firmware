@@ -1,5 +1,5 @@
-#ifndef LOVELIVE_BLADE9_H
-#define LOVELIVE_BLADE9_H
+#ifndef LOVELIVE_BLADE11_H
+#define LOVELIVE_BLADE11_H
 
 #include "quantum.h"
 #ifdef RGBLIGHT_ENABLE

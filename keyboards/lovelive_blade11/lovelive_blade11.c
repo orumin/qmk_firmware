@@ -1,4 +1,4 @@
-#include "lovelive_blade9.h"
+#include "lovelive_blade11.h"
 #include "rgblight.h"
 
 #include <avr/pgmspace.h>
