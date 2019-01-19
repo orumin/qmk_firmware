@@ -41,7 +41,7 @@
 #define RGB_DI_PIN D3
 #define RGBLIGHT_TIMER
 //#define RGBLED_NUM 12    // Number of LEDs. see ./keymaps/default/config.h
-#define RGBLED_NUM 16    // Number of LEDs
+#define RGBLED_NUM 12    // Number of LEDs
 
 #define ws2812_PORTREG  PORTD
 #define ws2812_DDRREG   DDRD

@@ -42,23 +42,10 @@ enum Layer
   _RIKO,
   _MARI,
   _KANAN,
+  _LOCK,
 };
 
-#define SEND_DIA 100
-#define SEND_YOU 101
-#define SEND_TIKA 102
-#define SEND_ZURA 103
-#define SEND_RUBY 104
-#define SEND_YOHANE 105
-#define SEND_RIKO 106
-#define SEND_MARI 107
-#define SEND_KANAN 108
 
-//#define _RUBY_SUB1 112
-//#define _RUBY_SUB2 113
-//#define _RUBY_SUB3 114
-//#define _SCHOOL_IDOL_FESTIVAL 115
-//#define _CATLOCK 5
 
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
@@ -85,7 +72,10 @@ int long_tap_timer;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT(
-    TIKA, RIKO, KANAN, DIA, YOU, YOHANE, ZURA, MARI, RUBY, RGB_TOG, RGB_TOG
+    TIKA, RIKO, KANAN, DIA, YOU, YOHANE, ZURA, MARI, RUBY, RGB_TOG, TG(_LOCK)
+  ),
+  [_LOCK] = LAYOUT(
+    KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, RGB_TOG, KC_TRNS
   ),
 };
 
@@ -214,11 +204,11 @@ int aqours_led_timer_count = 0;
 int aqours_led_auto_timer_count = 0;
 void aqours_led(void) {
   aqours_led_timer_count++;
-  if (aqours_led_timer_count > 400) {
+  if (aqours_led_timer_count > 500) {
     aqours_led_timer_count = 0;
-    if (aqours_led_anim_index < 8) {
+    if (aqours_led_anim_index < 6) {
       sethsv(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index]-30, (LED_TYPE *)&led[aqours_led_anim_index]);
-      sethsv(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index]-30, (LED_TYPE *)&led[15-aqours_led_anim_index]);
+      sethsv(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index]-30, (LED_TYPE *)&led[11-aqours_led_anim_index]);
       aqours_led_anim_index++;
       rgblight_set();
     }
