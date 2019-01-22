@@ -180,11 +180,10 @@ void check_tap_and_send_key(int MEMBER) {
 }
 
 int aqours_color_h[] = { 26, 340, 150,   0, 199, 220, 53, 265, 322};
-int aqours_color_s[] = {255, 165, 255, 255, 255, 350, 255, 255, 255};
-int aqours_color_v[] = {255, 255, 255, 255, 255, 255, 200, 255, 255};
+int aqours_color_s[] = {255, 255, 255, 255, 255, 255, 255, 255, 255};
+int aqours_color_v[] = {155, 155, 155, 155, 155, 155, 155, 155, 155};
 
 void LED_default_set(void) {
-
   sethsv(aqours_color_h[2], aqours_color_s[2], aqours_color_v[2], (LED_TYPE *)&led[0]);
   sethsv(aqours_color_h[7], aqours_color_s[7], aqours_color_v[7], (LED_TYPE *)&led[1]);
   sethsv(aqours_color_h[1], aqours_color_s[1], aqours_color_v[1], (LED_TYPE *)&led[2]);
@@ -194,18 +193,14 @@ void LED_default_set(void) {
   sethsv(aqours_color_h[0], aqours_color_s[0], aqours_color_v[0], (LED_TYPE *)&led[6]);
   sethsv(aqours_color_h[4], aqours_color_s[4], aqours_color_v[4], (LED_TYPE *)&led[7]);
   sethsv(aqours_color_h[3], aqours_color_s[3], aqours_color_v[3], (LED_TYPE *)&led[8]);
-
   rgblight_set();
-
 }
 
 
 void LED_layer_set(int aqours_index) {
-  //i2c_init();
-  //i2c_send(0xb0, (uint8_t*)led, 3 * RGBLED_NUM);
+
   for (int c = 0; c < 9; c++) {
-  sethsv(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index], (LED_TYPE *)&led[c]);
-    //rgblight_sethsv_noeeprom(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index]);
+      sethsv(aqours_color_h[aqours_index], aqours_color_s[aqours_index], aqours_color_v[aqours_index], (LED_TYPE *)&led[c]);
   }
   rgblight_set();
 }
@@ -373,24 +368,79 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
   }
 
+  if (IS_LAYER_ON(_SCHOOL_IDOL_FESTIVAL)) {
+    switch (keycode) {
+
+      case KC_1:
+        if (record->event.pressed) {
+          rgblight_sethsv_at(aqours_color_h[3], 255, 255, 8);
+        } else {
+          rgblight_sethsv_at(aqours_color_h[3], aqours_color_s[3], aqours_color_v[3], 8);
+        }
+        break;
+      case KC_2:
+        if (record->event.pressed) {
+          rgblight_sethsv_at(aqours_color_h[4], 255, 255, 7);
+        } else {
+          rgblight_sethsv_at(aqours_color_h[4], aqours_color_s[4], aqours_color_v[4], 7);
+        }
+        break;
+      case KC_3:
+        if (record->event.pressed) {
+          rgblight_sethsv_at(aqours_color_h[0], 255, 255, 6);
+        } else {
+          rgblight_sethsv_at(aqours_color_h[0], aqours_color_s[0], aqours_color_v[0], 6);
+        }
+        break;
+      case KC_4:
+        if (record->event.pressed) {
+          rgblight_sethsv_at(aqours_color_h[6], 255, 255, 5);
+        } else {
+          rgblight_sethsv_at(aqours_color_h[6], aqours_color_s[6], aqours_color_v[6], 5);
+        }
+        break;
+      case KC_5:
+        if (record->event.pressed) {
+          rgblight_sethsv_at(aqours_color_h[8], 255, 255, 4);
+        } else {
+          rgblight_sethsv_at(aqours_color_h[8], aqours_color_s[8], aqours_color_v[8], 4);
+        }
+        break;
+      case KC_6:
+        if (record->event.pressed) {
+          rgblight_sethsv_at(aqours_color_h[5], 255, 255, 3);
+        } else {
+          rgblight_sethsv_at(aqours_color_h[5], aqours_color_s[5], aqours_color_v[5], 3);
+        }
+        break;
+      case KC_7:
+        if (record->event.pressed) {
+          rgblight_sethsv_at(aqours_color_h[1], 255, 255, 2);
+        } else {
+          rgblight_sethsv_at(aqours_color_h[1], aqours_color_s[1], aqours_color_v[1], 2);
+        }
+        break;
+      case KC_8:
+        if (record->event.pressed) {
+          rgblight_sethsv_at(aqours_color_h[7], 255, 255, 1);
+        } else {
+          rgblight_sethsv_at(aqours_color_h[7], aqours_color_s[7], aqours_color_v[7], 1);
+        }
+          break;
+    case KC_9:
+      if (record->event.pressed) {
+        rgblight_sethsv_at(aqours_color_h[2], 255, 255, 0);
+      } else {
+        rgblight_sethsv_at(aqours_color_h[2], aqours_color_s[2], aqours_color_v[2], 0);
+      }
+      break;
+      }
+  }
+
   return true;
 }
 void matrix_init_user(void) {
-  //qk_ucis_start();
-  //set_unicode_input_mode(UC_WIN);
-  /*
-  sethsv(aqours_color_h[2], aqours_color_s[2], aqours_color_v[2], (LED_TYPE *)&led[0]);
-  sethsv(aqours_color_h[7], aqours_color_s[7], aqours_color_v[7], (LED_TYPE *)&led[1]);
-  sethsv(aqours_color_h[1], aqours_color_s[1], aqours_color_v[1], (LED_TYPE *)&led[2]);
-  sethsv(aqours_color_h[5], aqours_color_s[5], aqours_color_v[5], (LED_TYPE *)&led[3]);
-  sethsv(aqours_color_h[8], aqours_color_s[8], aqours_color_v[8], (LED_TYPE *)&led[4]);
-  sethsv(aqours_color_h[6], aqours_color_s[6], aqours_color_v[6], (LED_TYPE *)&led[5]);
-  sethsv(aqours_color_h[0], aqours_color_s[0], aqours_color_v[0], (LED_TYPE *)&led[6]);
-  sethsv(aqours_color_h[4], aqours_color_s[4], aqours_color_v[4], (LED_TYPE *)&led[7]);
-  sethsv(aqours_color_h[3], aqours_color_s[3], aqours_color_v[3], (LED_TYPE *)&led[8]);
-
-  rgblight_set();
-  */
+  LED_default_set();
 }
 
 void matrix_scan_user(void) {
