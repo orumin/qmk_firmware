@@ -37,10 +37,13 @@ extern rgblight_config_t rgblight_config;
 // The underscores don't mean anything - you can have a layer called STUFF or any other name.
 // Layer names don't all need to be of the same length, obviously, and you can also skip them
 // entirely and just use numbers.
-#define _QWERTY 0
-#define _LOWER 3
-#define _RAISE 4
-#define _ADJUST 16
+
+enum layer_number {
+  _QWERTY = 0,
+  _LOWER,
+  _RAISE,
+  _ADJUST
+};
 //#define _CATLOCK 5
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
@@ -107,62 +110,62 @@ enum macro_keycodes {
 //const uint8_t RGBLED_SNAKE_INTERVALS[] PROGMEM = {25, 50, 50};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [_QWERTY] = LAYOUT_kc( \
+  [_QWERTY] = LAYOUT( \
   //,-----------------------------------------.                ,-----------------------------------------.
-        BSPC,     Q,     W,     E,     R,     T,                      Y,     U,     I,     O,     P,  BSPC,\
+    KC_BSPC,  KC_Q,  KC_W,  KC_E,  KC_R,  KC_T,                   KC_Y,  KC_U,  KC_I,  KC_O,  KC_P, KC_BSPC,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-       LSFT,     A,     S,     D,     F,     G,                      H,     J,     K,     L,    UP,   KANJI,\
+    KC_LSFT,  KC_A,  KC_S,  KC_D,  KC_F,  KC_G,                   KC_H,  KC_J,  KC_K,  KC_L, KC_UP, KC_KANJI,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      LCTRL,     Z,     X,     C,     V,     B,                      N,     M,  COMM,  LEFT,  DOWN,  RGHT,\
+   KC_LCTRL,  KC_Z,  KC_X,  KC_C,  KC_V,  KC_B,                   KC_N,  KC_M, KC_COMM, KC_LEFT, KC_DOWN, KC_RGHT,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                   LGUI, LOWER,  SPC,      ENT, RAISE,  GUAP \
+                                   KC_LGUI, LOWER, KC_SPC,      KC_ENT, RAISE, KC_GUAP \
                               //`--------------------'  `--------------------'
   ),
 
-  [_LOWER] = LAYOUT_kc( \
+  [_LOWER] = LAYOUT( \
   //,-----------------------------------------.                ,-----------------------------------------.
-        ESC,    F1,    F2,    F3,    F4,    F5,                  XXXXX,  MINS,   EQL,  JYEN,  LBRC,  RBRC,\
+    KC_ESC,  KC_F1, KC_F2, KC_F3, KC_F4, KC_F5,                  KC_NO, KC_MINS, KC_EQL, KC_JYEN, KC_LBRC, KC_RBRC,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      TAB,    F6,    F7,    F8,    F9,   F10,                  LSPO, XXXXX, XXXXX,  SCLN,  QUOT,  BSLS,\
+    KC_TAB,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,      KC_LSPO, KC_NO, KC_NO,  KC_SCLN,  KC_QUOT,  KC_BSLS,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      _____,   F11,   F12, XXXXX, KANJI,   ENT,                  RSPC, XXXXX,  COMM,   DOT,  SLSH,    RO,\
+      KC_TRNS,   KC_F11,   KC_F12, KC_NO, KC_KANJI, KC_ENT,        KC_RSPC, KC_NO,  KC_COMM,  KC_DOT,  KC_SLSH,  KC_RO,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                  _____, _____,   DEL,    XXXXX, _____,   APP \
+                                  KC_TRNS, KC_TRNS, KC_DEL,    KC_NO, KC_TRNS, KC_APP \
                               //`--------------------'  `--------------------'
   ),
 
-  [_RAISE] = LAYOUT_kc( \
+  [_RAISE] = LAYOUT( \
   //,-----------------------------------------.                ,-----------------------------------------.
-      _____,     1,     2,     3,     4,     5,                      6,     7,     8,     9,     0, XXXXX,\
+      KC_TRNS,  KC_1,  KC_2,  KC_3,  KC_4,  KC_5,                   KC_6,  KC_7,  KC_8,  KC_9,  KC_0, KC_NO,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      _____, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,                  XXXXX,     4,     5,     6,  QUOT, XXXXX,\
+      KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,                  KC_NO,  KC_4,  KC_5,  KC_6, KC_QUOT, KC_NO,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      _____, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,                      0,     1,     2,     3,   DOT, XXXXX,\
+      KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,                   KC_0,  KC_1,  KC_2,  KC_3, KC_DOT, KC_NO,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                  _____, _____, XXXXX,    XXXXX, _____,  LALT \
+                                  KC_TRNS, KC_TRNS, KC_NO,    KC_NO, KC_TRNS, KC_LALT \
                               //`--------------------'  `--------------------'
   ),
 
-  [_ADJUST] = LAYOUT_kc( \
+  [_ADJUST] = LAYOUT( \
   //,-----------------------------------------.                ,-----------------------------------------.
-        RST,  LRST,  KNRM,  KSWP, LPLAIN, LRAINBOW,             LSWIRL, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,\
+        KC_RST,  KC_LRST,  KC_KNRM,  KC_KSWP, KC_LPLAIN, KC_LRAINBOW,             KC_LSWIRL, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-       LTOG,  LHUI,  LSAI,  LVAI, LSNAKE, LNIGHT,                LTEST, XXXXX, XXXXX, XXXXX,  PGUP, XXXXX,\
+       KC_LTOG,  KC_LHUI,  KC_LSAI,  KC_LVAI, KC_LSNAKE, KC_LNIGHT,                KC_LTEST, KC_NO, KC_NO, KC_NO,  KC_PGUP, KC_NO,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      LSMOD,  LHUD,  LSAD,  LVAD, LXMAS, LGRADIENT,              LNEON, LANARCHY, XXXXX,  HOME,  PGDN,   END,\
+      KC_LSMOD,  KC_LHUD,  KC_LSAD,  KC_LVAD, KC_LXMAS, KC_LGRADIENT,              KC_LNEON, KC_LANARCHY, KC_NO,  KC_HOME, KC_PGDN, KC_END,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                  _____, _____, XXXXX,    XXXXX, _____, XXXXX \
+                                  KC_TRNS, KC_TRNS, KC_NO,    KC_NO, KC_TRNS, KC_NO \
                               //`--------------------'  `--------------------'
   )/*,
   [_CATLOCK] = LAYOUT_kc( \
   //,-----------------------------------------.                ,-----------------------------------------.
-        XXXXX,  XXXXX,  XXXXX,  XXXXX, XXXXX, XXXXX,             XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, LCATRETURN1,\
+        KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_NO, KC_NO,             KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, LCATRETURN1,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-       XXXXX,  XXXXX,  XXXXX,  XXXXX, XXXXX, XXXXX,                XXXXX, XXXXX, XXXXX, XXXXX,  XXXXX, LCATRETURN2,\
+       KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_NO, KC_NO,                KC_NO, KC_NO, KC_NO, KC_NO,  KC_NO, LCATRETURN2,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      XXXXX,  XXXXX,  XXXXX,  XXXXX, XXXXX, XXXXX,              XXXXX, XXXXX, XXXXX,  XXXXX,  XXXXX,   XXXXX,\
+      KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_NO, KC_NO,              KC_NO, KC_NO, KC_NO,  KC_NO,  KC_NO,   KC_NO,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                  XXXXX, XXXXX, XXXXX,    XXXXX, XXXXX, XXXXX \
+                                  KC_NO, KC_NO, KC_NO,    KC_NO, KC_NO, KC_NO \
                               //`--------------------'  `--------------------'
   )//キャットロックは未実装
   */
@@ -173,24 +176,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT_kc( \
   //,-----------------------------------------.                ,-----------------------------------------.
-      XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,                  XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,  XXXXX,\
+      KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,                  KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,  KC_NO,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,                 XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,   XXXXX,\
+      KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,                 KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,   KC_NO,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,                 XXXXX,  XXXXX,  XXXXX,  XXXXX,  XXXXX,  XXXXX,\
+      KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,                 KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                 XXXXX, LOWER,  XXXXX,   XXXXX, RAISE,  XXXXX \
+                                 KC_NO, LOWER,  KC_NO,   KC_NO, RAISE,  KC_NO \
                               //`--------------------'  `--------------------'
   ),
   [_ADJUST] = LAYOUT_kc( \
   //,-----------------------------------------.                ,-----------------------------------------.
-        RST,  LRST,  XXXXX,  XXXXX, LPLAIN, LRAINBOW,             LSWIRL, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,\
+        RST,  LRST,  KC_NO,  KC_NO, LPLAIN, LRAINBOW,             LSWIRL, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-       LTOG,  LHUI,  LSAI,  LVAI, LSNAKE, LNIGHT,                LTEST, XXXXX, XXXXX, XXXXX,  XXXXX, XXXXX,\
+       LTOG,  LHUI,  LSAI,  LVAI, LSNAKE, LNIGHT,                LTEST, KC_NO, KC_NO, KC_NO,  KC_NO, KC_NO,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-      LSMOD,  LHUD,  LSAD,  LVAD, LXMAS, LGRADIENT,              LNEON, LANARCHY, XXXXX,  XXXXX,  XXXXX,   XXXXX,\
+      LSMOD,  LHUD,  LSAD,  LVAD, LXMAS, LGRADIENT,              LNEON, LANARCHY, KC_NO,  KC_NO,  KC_NO,   KC_NO,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                  _____, _____, XXXXX,    XXXXX, _____, XXXXX \
+                                  _____, _____, KC_NO,    KC_NO, _____, KC_NO \
                               //`--------------------'  `--------------------'
   )
 };
@@ -205,7 +208,7 @@ bool led_anarchy = false;
 //#ifdef COMPILE_MIKU
 char miku_1_1[4][21] = {
   {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b},
-  {0x00+12, 0x01+12, 0x02+12, 0x03+12, 0x04+12, 0x05+12, 0x06+12, 0x07+12, 0x08+12, 0x09+12, 0x0a+12, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b},
+  {0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b},
   {0x00+24, 0x01+24, 0x02+24, 0x03+24, 0x04+24, 0x05+24, 0x06+24, 0x07+24, 0x08+24, 0x09+24, 0x0a+24, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b},
   {0x00+36, 0x01+36, 0x02+36, 0x03+36, 0x04+36, 0x05+36, 0x06+36, 0x07+36, 0x08+36, 0x09+36, 0x0a+36, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b},
 };
