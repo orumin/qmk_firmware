@@ -27,8 +27,11 @@
 
 /* Planck PCB default pin-out */
 #define MATRIX_ROW_PINS { B4, B6, B2, D7, B1, F7, F6, F5, F4 }
-#define MATRIX_COL_PINS { B5 }
+#define MATRIX_COL_PINS { }
 #define UNUSED_PINS
+
+/* COL2ROW, ROW2COL, or CUSTOM_MATRIX */
+#define DIODE_DIRECTION ROW2COL
 
 /* ws2812 RGB LED */
 
@@ -56,7 +59,7 @@
 
 
 /* COL2ROW or ROW2COL */
-#define DIODE_DIRECTION COL2ROW
+//#define DIODE_DIRECTION COL2ROW
 
 #define TAPPING_TERM 200
 
