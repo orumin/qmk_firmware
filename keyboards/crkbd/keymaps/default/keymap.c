@@ -47,9 +47,11 @@ enum layer_number {
 //#define _CATLOCK 5
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
+  #ifdef COMPILE_MIKU
   LOWER,
   RAISE,
   ADJUST,
+  #endif
   BACKLIT,
   RGBRST,
   RGB_MODE_NEON,
@@ -110,6 +112,7 @@ enum macro_keycodes {
 //const uint8_t RGBLED_SNAKE_INTERVALS[] PROGMEM = {25, 50, 50};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+  #ifdef COMPILE_MIKU
   [_QWERTY] = LAYOUT( \
   //,-----------------------------------------.                ,-----------------------------------------.
     KC_BSPC,  KC_Q,  KC_W,  KC_E,  KC_R,  KC_T,                   KC_Y,  KC_U,  KC_I,  KC_O,  KC_P, KC_BSPC,\
@@ -121,7 +124,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                    KC_LGUI, LOWER, KC_SPC,      KC_ENT, RAISE, KC_GUAP \
                               //`--------------------'  `--------------------'
   ),
-
   [_LOWER] = LAYOUT( \
   //,-----------------------------------------.                ,-----------------------------------------.
     KC_ESC,  KC_F1, KC_F2, KC_F3, KC_F4, KC_F5,                  KC_NO, KC_MINS, KC_EQL, KC_JYEN, KC_LBRC, KC_RBRC,\
@@ -156,7 +158,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
                                   KC_TRNS, KC_TRNS, KC_NO,    KC_NO, KC_TRNS, KC_NO \
                               //`--------------------'  `--------------------'
-  )/*,
+  )
+  #endif
+
+  #ifdef COMPILE_NO_MIKU
+  [_QWERTY] = LAYOUT( \
+  //,-----------------------------------------.                ,-----------------------------------------.
+    KC_BSPC,  KC_Q,  KC_W,  KC_E,  KC_R,  KC_T,                   KC_Y,  KC_U,  KC_I,  KC_O,  KC_P, KC_BSPC,\
+  //|------+------+------+------+------+------|                |------+------+------+------+------+------|
+    KC_LSFT,  KC_A,  KC_S,  KC_D,  KC_F,  KC_G,                   KC_H,  KC_J,  KC_K,  KC_L, KC_UP, KC_KANJI,\
+  //|------+------+------+------+------+------|                |------+------+------+------+------+------|
+   KC_LCTRL,  KC_Z,  KC_X,  KC_C,  KC_V,  KC_B,                   KC_N,  KC_M, KC_COMM, KC_LEFT, KC_DOWN, KC_RGHT,\
+  //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
+                                   KC_LGUI, KC_1, KC_SPC,      KC_ENT, KC_2, KC_GUAP \
+                              //`--------------------'  `--------------------'
+  )
+  #endif
+
+  /*,
   [_CATLOCK] = LAYOUT_kc( \
   //,-----------------------------------------.                ,-----------------------------------------.
         KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_NO, KC_NO,             KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, LCATRETURN1,\
@@ -392,6 +411,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
+  #ifdef COMPILE_MIKU
     case LOWER:
       if (record->event.pressed) {
         layer_on(_LOWER);
@@ -420,6 +440,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
         break;
+    #endif
         /*
     case CAT_LOCK1:
       if (record->event.pressed) {
