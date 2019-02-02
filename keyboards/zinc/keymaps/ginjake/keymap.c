@@ -35,6 +35,7 @@ enum custom_keycodes {
   EISU,
   RGBRST,
   AQOURS, //サンシャインぴっかぴかモード
+  ANARCHY //バチバチする。治安が良くない。
 };
 
 #ifdef RGBLIGHT_ENABLE
@@ -44,8 +45,14 @@ enum custom_keycodes {
   int aqours_v[] = {255, 255, 255, 255, 255, 255, 255, 255, 255};
   const int NEXT_COLOR_TIME = 2400; //次の色に切り替わるまでの時間
   const int NEXT_CHANGE_TARGET_TIME = 100; //次のキーに色が伝播するまでの時間
+
+  const int ANARCHY_NEXT_COLOR_TIME = 1500; //次の色に切り替わるまでの時間
+  const int ANARCHY_NEXT_CHANGE_TARGET_TIME = 150; //次のキーに色が伝播するまでの時間
   bool aqours_mode = false;
+  bool anarchy_mode = false;
+  int anarchy_next_color_timer_count = 0;
   int aqours_next_color_timer_count = 0;
+  int anarchy_num  = 0;
   int aqours_num  = 0;
   int target_col = 0;
 
@@ -82,7 +89,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = { \
       KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                      KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC, \
       KC_LCTL, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                      KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, \
       KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                      KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT , \
-      KC_ESC,  ADJUST,  KC_LGUI, KC_LALT, LOWER,   KC_SPC,                    KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT \
+      KC_ESC,  ADJUST,  TG(_ADJUST), KC_LALT, LOWER,   KC_SPC,                    KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT \
       ),
 
   /* Colemak
@@ -169,10 +176,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = { \
    * `-----------------------------------------'             `-----------------------------------------'
    */
     [_ADJUST] =  LAYOUT_ortho_4x12( \
-      _______, RESET,   RGBRST,  _______, _______, _______,                   _______, QWERTY,  COLEMAK, DVORAK,  _______, KC_INS, \
+      ANARCHY, RESET,   RGBRST,  _______, _______, _______,                   _______, QWERTY,  COLEMAK, DVORAK,  _______, KC_INS, \
        AQOURS, RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, AG_NORM,                   AG_SWAP, KC_MINS, KC_EQL,  KC_PSCR, KC_SLCK, KC_PAUS,\
       _______, RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD, _______,                   _______, _______, _______, _______, _______, _______,\
-      _______, _______, _______, EISU,    EISU,    EISU,                      KANA,    KANA,    KC_HOME, KC_PGDN, KC_PGUP, KC_END\
+      _______, _______, TG(_ADJUST), EISU,    EISU,    EISU,                      KANA,    KANA,    KC_HOME, KC_PGDN, KC_PGUP, KC_END\
       )
 };
 
@@ -311,6 +318,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
       #endif
       break;
+    case ANARCHY:
+    #ifdef RGBLIGHT_ENABLE
+      if (record->event.pressed) {
+        anarchy_mode = !anarchy_mode;
+      }
+    #endif
+    break;
     case RGBRST:
       #ifdef RGBLIGHT_ENABLE
         if (record->event.pressed) {
@@ -326,6 +340,38 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 #ifdef RGBLIGHT_ENABLE
 
+  void anarchy_led(void) {
+    anarchy_next_color_timer_count++;
+    //一定間隔で色が変化
+    if (anarchy_next_color_timer_count > ANARCHY_NEXT_COLOR_TIME) {
+      anarchy_num++;
+      anarchy_next_color_timer_count = 0;
+      target_col = 0;
+      if (anarchy_num == sizeof(aqours_h) / sizeof(int)) {
+        anarchy_num = 0;
+      }
+    }
+
+    //キー毎に時間差で色が変化していく
+    if (anarchy_next_color_timer_count % ANARCHY_NEXT_CHANGE_TARGET_TIME == 0) {
+      if (target_col < MATRIX_COLS) {
+        for (int c = 0;c <= MATRIX_COLS * (MATRIX_ROWS / 2);c++) {
+          sethsv(0, 0, 0, (LED_TYPE *)&led[c]);
+        }
+        sethsv(aqours_h[anarchy_num], aqours_s[anarchy_num], aqours_v[anarchy_num], (LED_TYPE *)&led[target_col]);
+        sethsv(aqours_h[anarchy_num], aqours_s[anarchy_num], aqours_v[anarchy_num], (LED_TYPE *)&led[6 + target_col]);
+        sethsv(aqours_h[anarchy_num], aqours_s[anarchy_num], aqours_v[anarchy_num], (LED_TYPE *)&led[12 + target_col]);
+        sethsv(aqours_h[anarchy_num], aqours_s[anarchy_num], aqours_v[anarchy_num], (LED_TYPE *)&led[18 + target_col]);
+        target_col++;
+        rgblight_set();
+      } else if (target_col == MATRIX_COLS) {
+        for (int c = 0;c <= MATRIX_COLS * (MATRIX_ROWS / 2);c++) {
+          sethsv(0, 0, 0, (LED_TYPE *)&led[c]);
+        }
+        rgblight_set();
+      }
+    }
+  }
   void aqours_led(void) {
     aqours_next_color_timer_count++;
     //一定間隔で色が変化
@@ -356,6 +402,9 @@ void matrix_scan_user(void) {
     #ifdef RGBLIGHT_ENABLE
       if (aqours_mode) {
         aqours_led();
+      }
+      if (anarchy_mode) {
+        anarchy_led();
       }
     #endif
 }
