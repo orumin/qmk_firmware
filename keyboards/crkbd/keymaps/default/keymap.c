@@ -15,7 +15,7 @@
   #include "ssd1306.h"
 #endif
 
-#ifdef COMPILE_NO_MIKU
+#ifdef OLED_NO_ANIME
   //#include "../lib/mode_icon_reader.c"
   #include "../lib/layer_state_reader.c"
   //#include "../lib/host_led_state_reader.c"
@@ -38,20 +38,13 @@ extern rgblight_config_t rgblight_config;
 // Layer names don't all need to be of the same length, obviously, and you can also skip them
 // entirely and just use numbers.
 
-enum layer_number {
-  _QWERTY = 0,
-  _LOWER,
-  _RAISE,
-  _ADJUST
-};
+
 //#define _CATLOCK 5
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
-  #ifdef COMPILE_MIKU
   LOWER,
   RAISE,
   ADJUST,
-  #endif
   BACKLIT,
   RGBRST,
   RGB_MODE_NEON,
@@ -62,57 +55,64 @@ enum custom_keycodes {
   CAT_RETURN2*/
 };
 
-enum macro_keycodes {
-  KC_SAMPLEMACRO,
-};
+  enum layer_number {
+    _QWERTY = 0,
+    _LOWER,
+    _RAISE,
+    _ADJUST
+  };
+  enum macro_keycodes {
+    KC_SAMPLEMACRO,
+  };
 
-#define KC______ KC_TRNS
-#define KC_XXXXX KC_NO
-#define KC_KANJI KC_GRV
 
-#define KC_LOWER LOWER
-#define KC_RAISE RAISE
-#define KC_ADJUST ADJUST
-#define KC_RST   RESET
-#define KC_LRST  RGBRST
-#define KC_LTOG  RGB_TOG
-#define KC_LHUI  RGB_HUI
-#define KC_LHUD  RGB_HUD
-#define KC_LSAI  RGB_SAI
-#define KC_LSAD  RGB_SAD
-#define KC_LVAI  RGB_VAI
-#define KC_LVAD  RGB_VAD
-#define KC_LSMOD RGB_SMOD
-#define KC_LPLAIN  RGB_MODE_PLAIN
-#define KC_LBREATHE  RGB_MODE_BREATHE
-#define KC_LRAINBOW  RGB_MODE_RAINBOW
-#define KC_LSWIRL  RGB_MODE_SWIRL
-#define KC_LSNAKE  RGB_MODE_SNAKE
-#define KC_LNIGHT  RGB_MODE_KNIGHT
-#define KC_LXMAS  RGB_MODE_XMAS
-#define KC_LGRADIENT  RGB_MODE_GRADIENT
-#define KC_LTEST RGB_MODE_RGBTEST
-#define KC_LNEON RGB_MODE_NEON
-#define KC_LANARCHY RGB_MODE_ANARCHY
+  #define KC_KNRM  AG_NORM
+  #define KC_KSWP  AG_SWAP
+  #define KC_GUAP  LALT_T(KC_APP)
+  #define KC______ KC_TRNS
+  #define KC_XXXXX KC_NO
+  #define KC_KANJI KC_GRV
 
-#define KC_CTLTB CTL_T(KC_TAB)
-#define KC_GUIEI GUI_T(KC_LANG2)
-#define KC_ALTKN ALT_T(KC_LANG1)
+  #define KC_LOWER LOWER
+  #define KC_RAISE RAISE
+  #define KC_ADJUST ADJUST
+  #define KC_RST   RESET
+  #define KC_LRST  RGBRST
+  #define KC_LTOG  RGB_TOG
+  #define KC_LHUI  RGB_HUI
+  #define KC_LHUD  RGB_HUD
+  #define KC_LSAI  RGB_SAI
+  #define KC_LSAD  RGB_SAD
+  #define KC_LVAI  RGB_VAI
+  #define KC_LVAD  RGB_VAD
+  #define KC_LSMOD RGB_SMOD
+  #define KC_LPLAIN  RGB_MODE_PLAIN
+  #define KC_LBREATHE  RGB_MODE_BREATHE
+  #define KC_LRAINBOW  RGB_MODE_RAINBOW
+  #define KC_LSWIRL  RGB_MODE_SWIRL
+  #define KC_LSNAKE  RGB_MODE_SNAKE
+  #define KC_LNIGHT  RGB_MODE_KNIGHT
+  #define KC_LXMAS  RGB_MODE_XMAS
+  #define KC_LGRADIENT  RGB_MODE_GRADIENT
+  #define KC_LTEST RGB_MODE_RGBTEST
+  #define KC_LNEON RGB_MODE_NEON
+  #define KC_LANARCHY RGB_MODE_ANARCHY
 
-#define KC_LCATLOCK1 CAT_LOCK1
-#define KC_LCATLOCK2 CAT_LOCK2
-#define KC_LCATRETURN1 CAT_RETURN1
-#define KC_LCATRETURN2 CAT_RETURN2
+  #define KC_CTLTB CTL_T(KC_TAB)
+  #define KC_GUIEI GUI_T(KC_LANG2)
+  #define KC_ALTKN ALT_T(KC_LANG1)
 
-#define KC_KNRM  AG_NORM
-#define KC_KSWP  AG_SWAP
-#define KC_GUAP  LALT_T(KC_APP)
+  #define KC_LCATLOCK1 CAT_LOCK1
+  #define KC_LCATLOCK2 CAT_LOCK2
+  #define KC_LCATRETURN1 CAT_RETURN1
+  #define KC_LCATRETURN2 CAT_RETURN2
+
 //const uint8_t RGBLED_RAINBOW_MOOD_INTERVALS[] PROGMEM = {20, 20, 5};
 //const uint8_t RGBLED_RAINBOW_SWIRL_INTERVALS[] PROGMEM = {2, 50, 50};
 //const uint8_t RGBLED_SNAKE_INTERVALS[] PROGMEM = {25, 50, 50};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  #ifdef COMPILE_MIKU
+  #ifdef OLED_MIKU
   [_QWERTY] = LAYOUT( \
   //,-----------------------------------------.                ,-----------------------------------------.
     KC_BSPC,  KC_Q,  KC_W,  KC_E,  KC_R,  KC_T,                   KC_Y,  KC_U,  KC_I,  KC_O,  KC_P, KC_BSPC,\
@@ -161,18 +161,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
   #endif
 
-  #ifdef COMPILE_NO_MIKU
+  #ifdef OLED_RUBY
+
   [_QWERTY] = LAYOUT( \
   //,-----------------------------------------.                ,-----------------------------------------.
-    KC_BSPC,  KC_Q,  KC_W,  KC_E,  KC_R,  KC_T,                   KC_Y,  KC_U,  KC_I,  KC_O,  KC_P, KC_BSPC,\
+    KC_LSNAKE,  KC_Q,  KC_W,  KC_E,  KC_R,  KC_T,                   KC_Y,  KC_U,  KC_I,  KC_O,  KC_P, KC_BSPC,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
-    KC_LSFT,  KC_A,  KC_S,  KC_D,  KC_F,  KC_G,                   KC_H,  KC_J,  KC_K,  KC_L, KC_UP, KC_KANJI,\
+    KC_LHUI,  KC_A,  KC_S,  KC_D,  KC_F,  KC_G,                   KC_H,  KC_J,  KC_K,  KC_L, KC_UP, KC_KANJI,\
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
    KC_LCTRL,  KC_Z,  KC_X,  KC_C,  KC_V,  KC_B,                   KC_N,  KC_M, KC_COMM, KC_LEFT, KC_DOWN, KC_RGHT,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
                                    KC_LGUI, KC_1, KC_SPC,      KC_ENT, KC_2, KC_GUAP \
                               //`--------------------'  `--------------------'
   )
+
   #endif
 
   /*,
@@ -191,7 +193,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 /*
-#ifdef COMPILE_NO_MIKU
+#ifdef OLED_NO_ANIME
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT_kc( \
   //,-----------------------------------------.                ,-----------------------------------------.
@@ -224,16 +226,25 @@ int press_count = 0;
 int neon_mode = 0;
 bool led_anarchy = false;
 
-//#ifdef COMPILE_MIKU
-char miku_1_1[4][21] = {
-  {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b},
-  {0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b},
-  {0x00+24, 0x01+24, 0x02+24, 0x03+24, 0x04+24, 0x05+24, 0x06+24, 0x07+24, 0x08+24, 0x09+24, 0x0a+24, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b},
-  {0x00+36, 0x01+36, 0x02+36, 0x03+36, 0x04+36, 0x05+36, 0x06+36, 0x07+36, 0x08+36, 0x09+36, 0x0a+36, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b},
+#ifdef OLED_MIKU
+char oled_1_1[4][21] = {
+  {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+  {0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+  {0x00+24, 0x01+24, 0x02+24, 0x03+24, 0x04+24, 0x05+24, 0x06+24, 0x07+24, 0x08+24, 0x09+24, 0x0a+24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+  {0x00+36, 0x01+36, 0x02+36, 0x03+36, 0x04+36, 0x05+36, 0x06+36, 0x07+36, 0x08+36, 0x09+36, 0x0a+36, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 };
+bool oled_switch = true;
+#endif
 
-bool miku_switch = true;
-//#endif
+#ifdef OLED_RUBY
+char oled_1_1[4][21] = {
+  {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+  {0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+  {0x00+22, 0x01+22, 0x02+22, 0x03+22, 0x04+22, 0x05+22, 0x06+22, 0x07+22, 0x08+22, 0x09+22, 0x0a+22, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+  {0x00+33, 0x01+33, 0x02+33, 0x03+33, 0x04+33, 0x05+33, 0x06+33, 0x07+33, 0x08+33, 0x09+33, 0x0a+33, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+};
+bool oled_switch = true;
+#endif
 
 void persistent_default_layer_set(uint16_t default_layer) {
   eeconfig_update_default_layer(default_layer);
@@ -259,115 +270,76 @@ void matrix_init_user(void) {
     #endif
 }
 
-//SSD1306 OLED update loop, make sure to add #define SSD1306OLED in config.h
-#ifdef SSD1306OLED
 
-#define WEIGHT 10 // ミリ秒
-int hue = 0;
-int last_time = 0;
-
-void noizy_led(void) {
-
-  last_time++;
-  if (last_time > WEIGHT) {
-    last_time = 0;
-    for (int i=0; i<=6; i++ ) { //LEDは片方につき7個あるため、その数だけループ
-       rgblight_sethsv_at((360 / 6 * i + hue) % 360, 255, 125, i);
-     }
-     hue += 20;
-     if (hue > 360) {
-       hue = 0;
-     }
-  }
-}
-#endif
 
 void matrix_scan_user(void) {
    iota_gfx_task();
-   if (neon_mode) {
-     noizy_led();
-   }
 }
 
-int miku_timer = 0;
-int miku_layer = 0;
+int oled_timer = 0;
+int oled_layer = 0;
 //int layer_4_switching_count = 0; //レイヤー4は、稀に描画
-#ifdef COMPILE_MIKU
+#if defined(OLED_MIKU) || defined(OLED_RUBY)
 void increment_font_layer(void) {
-    miku_layer++;
-    miku_timer = 0;
+    oled_layer++;
+    oled_timer = 0;
 }
 #endif
 
+void render_font_layer(int index,int timer) {
+    set_font_num(index);
+    if (timer == 8) {
+        increment_font_layer();
+    }
+}
 //int shutter_time = 0;
+int hoge = 0;
 void matrix_render_user(struct CharacterMatrix *matrix) {
 
-  #ifdef COMPILE_MIKU
-  //shutter_time++;
-  //if (shutter_time == 2) {
-    if(miku_switch) {
-      set_shutter(0);
-      miku_switch = false;
-    } else {
-      set_shutter(1);
-      miku_switch = true;
-    }
-    //shutter_time = 0;
-  //}
+  #ifdef OLED_MIKU
+    set_shutter(oled_switch);
+    oled_switch = !oled_switch;
 
-  matrix_write_ln(matrix, miku_1_1[0]);
-  matrix_write_ln(matrix, miku_1_1[1]);
-  matrix_write_ln(matrix, miku_1_1[2]);
-  matrix_write(matrix, miku_1_1[3]);
+    matrix_write_ln(matrix, oled_1_1[0]);
+    matrix_write_ln(matrix, oled_1_1[1]);
+    matrix_write_ln(matrix, oled_1_1[2]);
+    matrix_write(matrix, oled_1_1[3]);
 
-  miku_timer++;
-  if(miku_layer == 0) {
-    set_font_num(0);
-    if (miku_timer == 8) {
-        increment_font_layer();
+    oled_timer++;
+    render_font_layer(oled_layer, oled_timer);
+    if (oled_layer == 3) {
+      oled_layer = 0;
     }
-  }
-  if(miku_layer == 1) {
-    set_font_num(1);
-    if (miku_timer == 8) {
-        increment_font_layer();
-    }
-  }
-  if(miku_layer == 2) {
-    set_font_num(2);
-    if (miku_timer == 8) {
-        increment_font_layer();
-    }
-  }
-  if (miku_layer == 3) {
-    miku_layer = 0;
-  }
-  /*
-  if (layer_4_switching_count < 4) {
-    if (miku_layer == 3) {
-      miku_layer = 0;
-      layer_4_switching_count++;
-    }
-  } else {
-    if(miku_layer == 3) {
-      set_font_num(3);
-      if (miku_timer == 6) {
-          increment_font_layer();
-      }
-    }
-    if (miku_layer == 4) {
-      miku_layer = 0;
-      layer_4_switching_count = 0;
-    }
-  }
-*/
+
   #endif
 
-  #ifdef COMPILE_NO_MIKU
-  matrix_write_ln(matrix, miku_1_1[0]);
-  matrix_write_ln(matrix, miku_1_1[1]);
-  matrix_write_ln(matrix, miku_1_1[2]);
-  matrix_write(matrix, miku_1_1[3]);
+
+  #ifdef OLED_RUBY
+    set_shutter(oled_switch);
+    oled_switch = !oled_switch;
+
+    matrix_write_ln(matrix, oled_1_1[0]);
+    matrix_write_ln(matrix, oled_1_1[1]);
+    matrix_write_ln(matrix, oled_1_1[2]);
+    matrix_write(matrix, oled_1_1[3]);
+
+    oled_timer++;
+    render_font_layer(oled_layer, oled_timer);
+    if (oled_layer == 5) {
+      sethsv(hoge, 150, 150, (LED_TYPE *)&led[6]);
+      hoge+=5;
+      rgblight_set();
+      oled_layer = 0;
+    }
+
+  #endif
+
+
+  #ifdef OLED_NO_ANIME
+  matrix_write_ln(matrix, oled_1_1[0]);
+  matrix_write_ln(matrix, oled_1_1[1]);
+  matrix_write_ln(matrix, oled_1_1[2]);
+  matrix_write(matrix, oled_1_1[3]);
 
   #endif
 
@@ -388,22 +360,6 @@ void iota_gfx_task_user(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if (led_anarchy) {
-    if (record->event.pressed) {
-      for(int i=0; i<=6; i++ ) {
-        rgblight_sethsv_at(360/6*i, 255, 125, i);
-      }
-    } else {
-      for(int i=0; i<=6; i++ ) {
-        rgblight_sethsv_at(360/14*press_count, 255, 125, i);
-      }
-
-      press_count++;
-      if (press_count == 14) {
-        press_count = 0;
-      }
-    }
-  }
   switch (keycode) {
     case QWERTY:
       if (record->event.pressed) {
@@ -411,7 +367,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-  #ifdef COMPILE_MIKU
     case LOWER:
       if (record->event.pressed) {
         layer_on(_LOWER);
@@ -440,7 +395,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
         break;
-    #endif
         /*
     case CAT_LOCK1:
       if (record->event.pressed) {
@@ -474,30 +428,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
       #endif
       break;
-    //治安が最悪のモード
-    case RGB_MODE_ANARCHY:
-      #ifdef RGBLIGHT_ENABLE
-        if (record->event.pressed) {
-            if (led_anarchy == 1) {
-              led_anarchy = 0;
-            } else {
-              led_anarchy = 1;
-            }
-        }
-      #endif
-      break;
-    //キータッチごとに色が変わる
-    case RGB_MODE_NEON:
-      #ifdef RGBLIGHT_ENABLE
-        if (record->event.pressed) {
-            if (neon_mode == 1) {
-              neon_mode = 0;
-            } else {
-              neon_mode = 1;
-            }
-        }
-      #endif
-      break;
+
   }
   return true;
 }

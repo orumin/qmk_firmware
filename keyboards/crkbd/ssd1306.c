@@ -4,10 +4,13 @@
 #include "i2c.h"
 #include <string.h>
 #include "print.h"
-#ifdef COMPILE_NO_MIKU
+#ifdef OLED_NO_ANIME
 #include "glcdfont.c"
 #endif
-#ifdef COMPILE_MIKU
+#ifdef OLED_RUBY
+#include "glcdfont_ruby.c"
+#endif
+#ifdef OLED_MIKU
 #include "glcdfont_miku.c"
 #endif
 #ifdef ADAFRUIT_BLE_ENABLE
@@ -220,10 +223,11 @@ static inline void matrix_write_byte(struct CharacterMatrix *matrix, uint8_t byt
 
 static inline void matrix_write_char(struct CharacterMatrix *matrix, uint8_t c) {
 
-  #ifdef COMPILE_NO_MIKU
+  #ifdef OLED_NO_ANIME
     const uint8_t *glyph = font[font_num] + c * FontWidth;
   #endif
-  #ifdef COMPILE_MIKU
+
+  #if defined(OLED_MIKU) || defined(OLED_RUBY)
     const uint8_t *glyph = font[font_num][shutter] + c * FontWidth;
   #endif
   for (uint8_t glyphCol = 0; glyphCol < FontWidth; ++glyphCol) {
@@ -233,10 +237,10 @@ static inline void matrix_write_char(struct CharacterMatrix *matrix, uint8_t c) 
 }
 
 static inline void matrix_write_char_delimited(struct CharacterMatrix *matrix, uint8_t c, uint8_t from, uint8_t width) {
-  #ifdef COMPILE_NO_MIKU
+  #ifdef OLED_NO_ANIME
     const uint8_t *glyph = font[font_num] + c * FontWidth;
   #endif
-  #ifdef COMPILE_MIKU
+  #if defined(OLED_MIKU) || defined(OLED_RUBY)
     const uint8_t *glyph = font[font_num][shutter] + c * FontWidth;
   #endif
   for (; width--; ++from) {

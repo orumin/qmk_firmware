@@ -27,10 +27,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MASTER_LEFT
 
 //メイン(master)に書き込むときはこっち
-//#define COMPILE_MIKU
+//#define OLED_MIKU
 
 //サブに書き込むときはこっち
-#define COMPILE_NO_MIKU
+#define OLED_RUBY
+//#define OLED_NO_ANIME
+
 //#define MASTER_RIGHT
 // #define EE_HANDS
 
@@ -42,15 +44,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TAPPING_TERM 100
 
 #undef RGBLED_NUM
-#define RGBLIGHT_ANIMATIONS
 #define RGBLED_NUM 27
 
 //RGBLIGHT_EFFECT_BREATHE_CENTER
 
 #define BACKLIGHT_LEVELS 5
-#define RGBLIGHT_EFFECT_SNAKE_LENGTH 4
-#define BREATHING_PERIOD 2
-#define RGBLIGHT_LIMIT_VAL 255
+#define RGBLIGHT_LIMIT_VAL 150
 #define RGBLIGHT_HUE_STEP 10
 #define RGBLIGHT_SAT_STEP 17
 #define RGBLIGHT_VAL_STEP 17
