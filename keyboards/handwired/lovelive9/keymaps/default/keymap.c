@@ -1,5 +1,6 @@
 #include QMK_KEYBOARD_H
-
+#include "pro_micro.h"
+#define SLEEP_TIME 90000
 //#include "v1.h"
 
 //Following line allows macro to read current RGB settings
@@ -37,6 +38,7 @@ enum Layer
 #define SEND_MARI 107
 #define SEND_KANAN 108
 
+long sleep_timer= 0;
 
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
@@ -109,7 +111,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, KC_ENT, KC_BSPC, KC_AMPR, KC_KANJI, KANAN
   ),
   [_SCHOOL_IDOL_FESTIVAL] = LAYOUT(
-    KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9
+     KC_LALT, KC_F7, KC_RWIN, KC_RALT, KC_LWIN, KC_LSHIFT, KC_LCTRL, KC_RSHIFT, KC_RCTRL
   ),
 };
 
@@ -150,24 +152,31 @@ void check_tap_and_send_key(int MEMBER) {
 
 int aqours_color_h[] = { 26, 340, 150,   0, 199, 220, 53, 265, 322};
 int aqours_color_s[] = {255, 165, 255, 255, 255, 350, 255, 255, 255};
-int aqours_color_v[] = {255, 255, 255, 255, 255, 255, 200, 255, 255};
+int aqours_color_v[] = {150, 150, 150, 150, 150, 150, 150, 150, 150};
+int member_led[] = {2, 7, 1, 5, 8, 6, 0, 4, 3};
 
-void LED_default_set(void) {
-
-  sethsv(aqours_color_h[2], aqours_color_s[2], aqours_color_v[2], (LED_TYPE *)&led[0]);
-  sethsv(aqours_color_h[7], aqours_color_s[7], aqours_color_v[7], (LED_TYPE *)&led[1]);
-  sethsv(aqours_color_h[1], aqours_color_s[1], aqours_color_v[1], (LED_TYPE *)&led[2]);
-  sethsv(aqours_color_h[5], aqours_color_s[5], aqours_color_v[5], (LED_TYPE *)&led[3]);
-  sethsv(aqours_color_h[8], aqours_color_s[8], aqours_color_v[8], (LED_TYPE *)&led[4]);
-  sethsv(aqours_color_h[6], aqours_color_s[6], aqours_color_v[6], (LED_TYPE *)&led[5]);
-  sethsv(aqours_color_h[0], aqours_color_s[0], aqours_color_v[0], (LED_TYPE *)&led[6]);
-  sethsv(aqours_color_h[4], aqours_color_s[4], aqours_color_v[4], (LED_TYPE *)&led[7]);
-  sethsv(aqours_color_h[3], aqours_color_s[3], aqours_color_v[3], (LED_TYPE *)&led[8]);
-
-  rgblight_set();
-
+void set_aqours_hsv(int i) {
+    sethsv(aqours_color_h[member_led[i]], aqours_color_s[member_led[i]], aqours_color_v[member_led[i]], (LED_TYPE *)&led[i]);
 }
 
+void set_aqours_v(int i, int v) {
+    sethsv(aqours_color_h[member_led[i]], aqours_color_s[member_led[i]], v, (LED_TYPE *)&led[i]);
+}
+
+void rgblight_setaqours_hsv_at(int i) {
+    rgblight_sethsv_at(aqours_color_h[member_led[i]], aqours_color_s[member_led[i]], aqours_color_v[member_led[i]], i);
+}
+
+void rgblight_setaqours_v_at(int i, int v) {
+    rgblight_sethsv_at(aqours_color_h[member_led[i]], aqours_color_s[member_led[i]], v, i);
+}
+
+void LED_default_set(void) {
+  for (int c = 0; c < 9; c++) {
+    set_aqours_hsv(c);
+  }
+  rgblight_set();
+}
 
 void LED_layer_set(int aqours_index) {
   for (int c = 0; c < 9; c++) {
@@ -176,11 +185,12 @@ void LED_layer_set(int aqours_index) {
   rgblight_set();
 }
 
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
-  switch (keycode) {
+  sleep_timer = 0;
+  LED_default_set();
 
+  switch (keycode) {
     case DIA:
       if (record->event.pressed) {
         long_tap_timer = 1;
@@ -324,15 +334,111 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         layer_off(_SCHOOL_IDOL_FESTIVAL);
       }
       break;
+
+    case KC_LALT:
+        if (record->event.pressed) {
+            rgblight_setaqours_v_at(8, 255);
+        } else {
+            rgblight_setaqours_hsv_at(8);
+        }
+     break;
+
+    case KC_F7:
+        if (record->event.pressed) {
+            rgblight_setaqours_v_at(7, 255);
+        } else {
+            rgblight_setaqours_hsv_at(7);
+        }
+    break;
+
+    case KC_RWIN:
+        if (record->event.pressed) {
+            rgblight_setaqours_v_at(6, 255);
+        } else {
+            rgblight_setaqours_hsv_at(6);
+        }
+    break;
+
+    case KC_RALT:
+        if (record->event.pressed) {
+            rgblight_setaqours_v_at(5, 255);
+        } else {
+            rgblight_setaqours_hsv_at(5);
+        }
+    break;
+
+    case KC_LWIN:
+        if (record->event.pressed) {
+            rgblight_setaqours_v_at(4, 255);
+        } else {
+            rgblight_setaqours_hsv_at(4);
+        }
+    break;
+
+    case KC_LSHIFT:
+        if (record->event.pressed) {
+            rgblight_setaqours_v_at(3, 255);
+        } else {
+            rgblight_setaqours_hsv_at(3);
+        }
+    break;
+
+    case KC_LCTRL:
+        if (record->event.pressed) {
+            rgblight_setaqours_v_at(2, 255);
+        } else {
+            rgblight_setaqours_hsv_at(2);
+        }
+    break;
+
+    case KC_RSHIFT:
+        if (record->event.pressed) {
+            rgblight_setaqours_v_at(1, 255);
+        } else {
+            rgblight_setaqours_hsv_at(1);
+        }
+    break;
+
+    case KC_RCTRL:
+        if (record->event.pressed) {
+            rgblight_setaqours_v_at(0, 255);
+        } else {
+            rgblight_setaqours_hsv_at(0);
+        }
+    break;
   }
 
   return true;
 }
 
-
+int sleep_led_index = 0;
+void sleep_animation(void) {
+    if(sleep_led_index < 9)  {
+        if(sleep_timer%1500 == 99) {
+            for (int c = 0; c < 9; c++) {
+              set_aqours_v(c, 30);
+            }
+            set_aqours_hsv(sleep_led_index);
+            sleep_led_index++;
+            rgblight_set();
+        }
+    } else {
+        sleep_led_index = 0;
+        sleep_timer = SLEEP_TIME;
+    }
+}
 void matrix_scan_user(void) {
-
+  if(sleep_timer > SLEEP_TIME) {
+      sleep_animation();
+  }
+  sleep_timer++;
   if (long_tap_timer > 0) {
     long_tap_timer++;
   }
+}
+
+void matrix_init_user(void) {
+    TX_RX_LED_INIT;
+    TXLED0;
+    RXLED0;
 }
