@@ -5,7 +5,7 @@
 上の1つはVarmilo Sakuraに対応しています。  
 Varmilo SakuraスイッチはMX軸の静電容量スイッチです。  
 いい感じに入手してください  
-![Varmilo Sakura](https://geekhack.org/index.php?topic=94239.0)
+[Varmilo Sakura](https://geekhack.org/index.php?topic=94239.0)
 
 
 
