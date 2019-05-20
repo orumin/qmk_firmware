@@ -1,6 +1,8 @@
 # infinity_plus3
 
 静電容量無接点方式を搭載した、名刺サイズのキーボードです。  
+[infinity_plus3](https://twitter.com/sirojake/status/1129773678005239809)
+
 下側の3つはCherryMX互換スイッチ、  
 上の1つはVarmilo Sakuraに対応しています。  
 Varmilo SakuraスイッチはMX軸の静電容量スイッチです。  
@@ -14,9 +16,6 @@ This keyboard is Japanese namecard size(55x91mm) keyboard.
 infinity_plus3 has 3 Cherry-MX switch and 1 Varmilo Sakura Switch.
 
 [Varmilo Sakura Switch](https://geekhack.org/index.php?topic=94239.0)
-
-[infinity_plus3](https://twitter.com/sirojake/status/1129773678005239809)
-
 
 
 
