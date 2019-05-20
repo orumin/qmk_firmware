@@ -45,19 +45,20 @@ See the [build environment setup](https://docs.qmk.fm/#/getting_started_build_to
 
 ### 部品の取り付け
 まず、こんな感じで部品を取り付けます  
-[infinity_plus3](https://user-images.githubusercontent.com/16838187/58027207-1a953980-7b53-11e9-8b7e-87a39f1bbc1a.png)
+![infinity_plus3](https://user-images.githubusercontent.com/16838187/58027207-1a953980-7b53-11e9-8b7e-87a39f1bbc1a.png)
   
-[完成後](https://pbs.twimg.com/media/D67BE1MUIAADaWr.jpg:large)
+![完成後](https://pbs.twimg.com/media/D67BE1MUIAADaWr.jpg:large)
   
 
 2.2MΩ抵抗は直列に3本繋がっています。  
 ようするに6.6MΩですが、この値が最適かは分かりません。  
-2.2MΩ、4.4MΩ、6.6MΩ、10MΩで実験しましたが、抵抗が増すほど細かな検知が可能になる代わりに、静電気による誤差が増えてしまいます。  
+2.2MΩ、4.4MΩ、6.6MΩ、10MΩで実験しましたが、  
+抵抗が増すほど細かな検知が可能になる代わりに、静電気による誤差が増えてしまいます。  
 抵抗やファームに手を入れれば、さらなる精度が出るかもしれません。  
 
 
 #### ケースの印刷
-次ケースを印刷します。  
+ケースを3Dプリントします。  
 基板+ゴム足だけだと、机からの静電気により誤差が出てしまう恐れがあります。  
 ケースのファイルは[こちら](https://github.com/ginjake/infinity_plus3/blob/master/case/infinity_plus3_2.stl)にありますが、少しやっつけです。  
 91mm×55mmで作っているので不満な方はいい感じに作ってください。  
@@ -77,7 +78,7 @@ keymap.cの
     や
 
 `#define PERIOD 70` を編集していい感じにします。  
-qmk_toolboxを使ってaverageの値を監視しながら調整していくのがおすすめです。 
+qmk_toolboxを使って `average` の値を監視しながら調整していくのがおすすめです。 
 
 基板のデータは
 https://github.com/ginjake/infinity_plus3
