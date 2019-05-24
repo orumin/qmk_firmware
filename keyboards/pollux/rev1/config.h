@@ -40,7 +40,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define MATRIX_HAS_GHOST
 
 /* number of backlight levels */
-// #define BACKLIGHT_LEVELS 3
+#define BACKLIGHT_LEVELS 5
+
+#define RGB_DI_PIN D3
+
 
 /* Set 0 if debouncing isn't needed */
 #define DEBOUNCING_DELAY 5

@@ -55,10 +55,10 @@ extern uint8_t is_master;
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [BASE] = LAYOUT_kc(                                                   \
-    JYEN, Q,    W, E,      R, T,      Y,  /**/ Y,   U, I,   O,    P,   MINS, EQL, \
-    LCTL, A,    S, D_MOUS, F, G,          /**/      H, J,   K,    L,   SCLN, QUOT, \
-    LSFT, FUNC ,Z, X,      C, V,      B,  /**/ B,   N, M,   COMM, DOT, SLSH, BSLS, \
-    /*                     */ ALT_ES, SPC,     TAB, RAI_EN              \
+    A, Q,    W, E,      R, T,      Y,  /**/ Y,   U, I,   O,    P,   A, A, \
+    A, A,    S, A, F, G,          /**/      H, J,   K,    L,   A, A, \
+    A, A ,Z, X,      C, V,      B,  /**/ B,   N, M,   COMM, DOT, A, A, \
+    /*                     */ A, A,     A, A              \
   ),
 
   [RAISE] = LAYOUT_kc(                                                  \
