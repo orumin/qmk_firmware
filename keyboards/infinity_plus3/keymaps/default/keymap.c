@@ -32,7 +32,7 @@
    YOHANE,
  };
 
-#define PERIOD 70
+#define PERIOD 140
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS]={
   [_QWERTY] = LAYOUT(
@@ -101,7 +101,7 @@ void matrix_scan_user(void) {
   if (hoge > PERIOD) {
     average = cnt_sum/PERIOD;
 
-    if (average > 41) {
+    if (average > 39) {
       if (pre_push == true) {
           SEND_STRING("A");
           rgblight_sethsv_at(16, 255, 150, 0);
@@ -113,7 +113,7 @@ void matrix_scan_user(void) {
       } else {
         pre_push = true;
       }
-    } else if (average > 35) {
+  } else if (average > 35) {
       if (pre_push == true) {
         if (push_wait == 0) { //深く押し込んだ後、離すときに浅く押した判定になってしまうのを阻止
           SEND_STRING("B");
