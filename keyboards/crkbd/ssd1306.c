@@ -13,7 +13,14 @@
 #include "sendchar.h"
 #include "timer.h"
 
-extern const unsigned char font[] PROGMEM;
+#ifdef OLED_NO_ANIME
+#include "glcdfont.c"
+#endif
+#ifdef OLED_MIKU
+#include "glcdfont_miku.c"
+#endif
+
+//extern const unsigned char font[] PROGMEM;
 
 // Set this to 1 to help diagnose early startup problems
 // when testing power-on with ble.  Turn it off otherwise,
@@ -26,12 +33,15 @@ extern const unsigned char font[] PROGMEM;
 //#define BatteryUpdateInterval 10000 /* milliseconds */
 
 // 'last_flush' is declared as uint16_t,
-// so this must be less than 65535 
-#define ScreenOffInterval 60000 /* milliseconds */
+// so this must be less than 65535
+#define ScreenOffInterval 600000 /* milliseconds */
 #if DEBUG_TO_SCREEN
 static uint8_t displaying;
 #endif
 static uint16_t last_flush;
+
+static int font_num = 0;
+static int shutter = 0;
 
 static bool force_dirty = true;
 
@@ -196,6 +206,14 @@ done:
   return success;
 }
 
+
+void set_font_num (int value) {
+  font_num = value;
+}
+void set_shutter(int value) {
+  shutter = value;
+}
+
 void matrix_write_char_inner(struct CharacterMatrix *matrix, uint8_t c) {
   *matrix->cursor = c;
   ++matrix->cursor;
@@ -205,7 +223,7 @@ void matrix_write_char_inner(struct CharacterMatrix *matrix, uint8_t c) {
     memmove(&matrix->display[0], &matrix->display[1],
             MatrixCols * (MatrixRows - 1));
     matrix->cursor = &matrix->display[MatrixRows - 1][0];
-    memset(matrix->cursor, ' ', MatrixCols);
+    //memset(matrix->cursor, 'j', MatrixCols);
   }
 }
 
@@ -218,7 +236,7 @@ void matrix_write_char(struct CharacterMatrix *matrix, uint8_t c) {
     uint8_t cursor_col = (matrix->cursor - &matrix->display[0][0]) % MatrixCols;
 
     while (cursor_col++ < MatrixCols) {
-      matrix_write_char_inner(matrix, ' ');
+      matrix_write_char_inner(matrix, 0x0b);
     }
     return;
   }
@@ -264,7 +282,7 @@ void iota_gfx_write_P(const char *data) {
 }
 
 void matrix_clear(struct CharacterMatrix *matrix) {
-  memset(matrix->display, ' ', sizeof(matrix->display));
+  memset(matrix->display, 0x0b, sizeof(matrix->display));
   matrix->cursor = &matrix->display[0][0];
   matrix->dirty = true;
 }
@@ -294,7 +312,15 @@ void matrix_render(struct CharacterMatrix *matrix) {
 
   for (uint8_t row = 0; row < MatrixRows; ++row) {
     for (uint8_t col = 0; col < MatrixCols; ++col) {
-      const uint8_t *glyph = font + (matrix->display[row][col] * FontWidth);
+
+      #ifdef OLED_NO_ANIME
+        const uint8_t *glyph = font[font_num] + (matrix->display[row][col] * FontWidth);
+      #endif
+
+      #ifdef OLED_MIKU
+        const uint8_t *glyph = font[font_num][shutter] + (matrix->display[row][col] * FontWidth);
+      #endif
+
 
       for (uint8_t glyphCol = 0; glyphCol < FontWidth; ++glyphCol) {
         uint8_t colBits = pgm_read_byte(glyph + glyphCol);
@@ -320,6 +346,7 @@ void iota_gfx_flush(void) {
 }
 
 __attribute__ ((weak))
+
 void iota_gfx_task_user(void) {
 }
 
@@ -328,12 +355,13 @@ void iota_gfx_task(void) {
 
   if (display.dirty|| force_dirty) {
     iota_gfx_flush();
-    force_dirty = false;
-  }
+    //force_dirty = false;
+}
 
-  if (timer_elapsed(last_flush) > ScreenOffInterval) {
+ /* if (timer_elapsed(last_flush) > ScreenOffInterval) {
     iota_gfx_off();
   }
+  */
 }
 
 bool process_record_gfx(uint16_t keycode, keyrecord_t *record) {
