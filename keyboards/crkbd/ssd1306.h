@@ -82,7 +82,7 @@ void iota_gfx_task_user(void);
 
 void set_font_num(int value);
 void set_shutter(int value);
-
+void set_force_dirty(bool flag);
 void matrix_clear(struct CharacterMatrix *matrix);
 void matrix_write_char_inner(struct CharacterMatrix *matrix, uint8_t c);
 void matrix_write_char(struct CharacterMatrix *matrix, uint8_t c);

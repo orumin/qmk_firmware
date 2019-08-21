@@ -213,6 +213,9 @@ void set_font_num (int value) {
 void set_shutter(int value) {
   shutter = value;
 }
+void set_force_dirty(bool flag) {
+    force_dirty = flag;
+}
 
 void matrix_write_char_inner(struct CharacterMatrix *matrix, uint8_t c) {
   *matrix->cursor = c;
@@ -355,7 +358,7 @@ void iota_gfx_task(void) {
 
   if (display.dirty|| force_dirty) {
     iota_gfx_flush();
-    //force_dirty = false;
+    force_dirty = false;
 }
 
  /* if (timer_elapsed(last_flush) > ScreenOffInterval) {

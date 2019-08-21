@@ -172,7 +172,7 @@ void matrix_scan_user(void) {
 int oled_timer = 0;
 int oled_layer = 0;
 
-bool shutter_flag = 0;
+
 int hoge = 0;
 void matrix_render_user(struct CharacterMatrix *matrix) {
 
@@ -208,12 +208,14 @@ void matrix_update(struct CharacterMatrix *dest, const struct CharacterMatrix *s
   }
 }
 
+int shutter_flag = 0;
 void iota_gfx_task_user(void) {
 
     #ifdef OLED_MIKU
-      shutter_flag = !shutter_flag;
-      if (shutter_flag) {
-
+      shutter_flag++;
+      if (shutter_flag > 7) {
+          shutter_flag = 0;
+          set_force_dirty(true);
           struct CharacterMatrix matrix;
           matrix_clear(&matrix);
 
