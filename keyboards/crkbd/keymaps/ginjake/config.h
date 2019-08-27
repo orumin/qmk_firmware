@@ -29,9 +29,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // #define EE_HANDS
 
 //メイン(master)に書き込むときはこっち
-#define OLED_MIKU
+//#define OLED_MIKU
 
-//#define OLED_NO_ANIME
+
 
 #define SSD1306OLED
 

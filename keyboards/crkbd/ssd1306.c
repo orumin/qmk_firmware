@@ -13,11 +13,11 @@
 #include "sendchar.h"
 #include "timer.h"
 
-#ifdef OLED_NO_ANIME
-#include "glcdfont.c"
-#endif
+
 #ifdef OLED_MIKU
 #include "glcdfont_miku.c"
+#else
+#include "glcdfont.c"
 #endif
 
 //extern const unsigned char font[] PROGMEM;
@@ -226,7 +226,11 @@ void matrix_write_char_inner(struct CharacterMatrix *matrix, uint8_t c) {
     memmove(&matrix->display[0], &matrix->display[1],
             MatrixCols * (MatrixRows - 1));
     matrix->cursor = &matrix->display[MatrixRows - 1][0];
-    //memset(matrix->cursor, 'j', MatrixCols);
+    #ifdef OLED_MIKU
+      matrix_write_char_inner(matrix, 0x0b);
+    #else
+      matrix_write_char_inner(matrix, 0x00);
+    #endif
   }
 }
 
@@ -239,7 +243,11 @@ void matrix_write_char(struct CharacterMatrix *matrix, uint8_t c) {
     uint8_t cursor_col = (matrix->cursor - &matrix->display[0][0]) % MatrixCols;
 
     while (cursor_col++ < MatrixCols) {
-      matrix_write_char_inner(matrix, 0x0b);
+      #ifdef OLED_MIKU
+        matrix_write_char_inner(matrix, 0x0b);
+      #else
+        matrix_write_char_inner(matrix, 0x00);
+      #endif
     }
     return;
   }
@@ -285,7 +293,12 @@ void iota_gfx_write_P(const char *data) {
 }
 
 void matrix_clear(struct CharacterMatrix *matrix) {
-  memset(matrix->display, 0x0b, sizeof(matrix->display));
+  #ifdef OLED_MIKU
+    memset(matrix->display, 0x0b, sizeof(matrix->display));
+  #else
+    memset(matrix->display, 0x00, sizeof(matrix->display));
+  #endif
+
   matrix->cursor = &matrix->display[0][0];
   matrix->dirty = true;
 }
@@ -316,12 +329,10 @@ void matrix_render(struct CharacterMatrix *matrix) {
   for (uint8_t row = 0; row < MatrixRows; ++row) {
     for (uint8_t col = 0; col < MatrixCols; ++col) {
 
-      #ifdef OLED_NO_ANIME
-        const uint8_t *glyph = font[font_num] + (matrix->display[row][col] * FontWidth);
-      #endif
-
       #ifdef OLED_MIKU
         const uint8_t *glyph = font[font_num][shutter] + (matrix->display[row][col] * FontWidth);
+      #else
+        const uint8_t *glyph = font + (matrix->display[row][col] * FontWidth);
       #endif
 
 
