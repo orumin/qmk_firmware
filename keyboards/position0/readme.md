@@ -6,6 +6,7 @@
 対応スイッチはVarmilo sakura,Varmilo Rose,Varmilo Greenのみです。
 静電容量の検知にＡＴＭＥＧＡ３２８Ｐを使っています。
 AVRライタを用いて、そちらにも別のファームを書き込む必要があります。
+![ファームウェア](https://github.com/ginjake/position0_firmware)
 
 This keyboard is 26key only Varmilo sakura or Varmilo Rose or Varmilo Green Switch.
 Those switch are Electrostatic-Capacitive technology as Topre,
@@ -14,7 +15,7 @@ ProMicro and using two ＡＴＭＥＧＡ３２８Ｐ.
 Pro Micro is this QMK firmware.
 ATMEGA328P is other firmware.
 source is this page.
-
+![position0_firmware](https://github.com/ginjake/position0_firmware)
 
 ![position0](https://pbs.twimg.com/media/EKnLricUcAAowb0?format=jpg&name=4096x4096)
 
