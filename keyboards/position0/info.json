@@ -1,0 +1,13 @@
+{
+    "keyboard_name": "positionzero",
+    "url": "https://revuestarlight.com/",
+    "maintainer": "ginjake",
+    "bootloader": "atmel-dfu",
+    "width": 0,
+    "height": 0,
+    "layouts": {
+        "LAYOUT": {
+            "layout": []
+        }
+    }
+}
