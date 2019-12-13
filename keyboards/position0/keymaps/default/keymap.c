@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * compile command = make namecard2x4/rev2:default:avrdude
  */
+#include <print.h>
 #include QMK_KEYBOARD_H
 // Use Dynamic macro
 //#include "dynamic_macro.h"
@@ -48,13 +49,21 @@ char str[2] = {0}; //デバッグ用
 
 /* Dummy */
 const uint16_t PROGMEM keymaps[1][MATRIX_ROWS][MATRIX_COLS]={0};
-uint16_t OriginKeymaps[28] = { \
-KC_A, KC_B, KC_C, KC_D, KC_E, KC_F, KC_G, \
- KC_H, KC_I, KC_J, KC_K, KC_0, KC_1, KC_2, \
- KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, \
- KC_L, KC_O, KC_P, KC_Q, KC_R, KC_S, KC_T};
+uint16_t OriginKeymaps[26] = { \
+ KC_0, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, \
+ KC_7, KC_8, KC_A, KC_B, KC_C, KC_D, KC_E, \
+ KC_F, KC_G, KC_H, KC_I, KC_J, KC_K, KC_L, \
+ KC_M, KC_O, KC_P, KC_Q, KC_R};
+
+ uint16_t keyPositions[2][16] = {\
+ { 20, 19, 12,  5, 17, 10, 11, 99, 99, 24, 25, 3, 4, 18, 6, 13}, \
+ { 16, 15,  8, 99, 99, 22, 23, 99, 99, 21, 14, 7, 0,  1,  2,  9} \
+};
 /* Port Setting and Calibrate Key Val */
 void matrix_init_user(void) {
+
+     debug_enable = true;
+
   /*************************
     Initial PORT Setting
   **************************/
@@ -89,7 +98,6 @@ void matrix_scan_user(void) {
     Key value update
   *******************************/
   for(uint8_t key=0;key<KEY_NUM;key++){
-    //key=0;
     /******************************
       Colmun Select
     *******************************/
@@ -110,15 +118,7 @@ void matrix_scan_user(void) {
         key_val[i][key] = 1;
       }
     }
-
-    //break;
-	}
-/*
-    if(key_val[0][0]){
-      str[0] = 0 + '0';
-      send_string(str);
-    }
-*/
+  }
 
 for (uint8_t c=0;c<INPUT_NUM;c++){
   for (uint8_t key=0;key<KEY_NUM;key++){
@@ -127,14 +127,14 @@ for (uint8_t c=0;c<INPUT_NUM;c++){
     　本当はどちらのＡＴＭＥＧＡ３２８Ｐの信号か区別する必要がある(cの値)も含める必要があるけど、
     　どのキーがどっちだったか忘れたので一旦無視。
     */
-    key_index = key;
+    //key_index = key + c*12;
     if(key_val[c][key]){
         if (registerCount[key_index] == 1) {
-            tap_code(OriginKeymaps[key_index]);
+            tap_code(OriginKeymaps[keyPositions[c][key]]);
             registerCount[key_index] = 2;
         }
         if (registerCount[key_index] == 0) {
-            tap_code(OriginKeymaps[key_index]);
+            tap_code(OriginKeymaps[keyPositions[c][key]]);
             registerCount[key_index] = 30;
         }
         if (registerCount[key_index] > 0) {
