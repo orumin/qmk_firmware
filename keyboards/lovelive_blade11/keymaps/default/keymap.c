@@ -43,8 +43,7 @@ enum Layer
   _MARI,
   _KANAN,
   _LOCK,
-  _TO_POV,
-  _POV,
+  _PARTY,
 };
 
 
@@ -63,11 +62,12 @@ enum custom_keycodes {
   RIKO,
   MARI,
   KANAN,
-  TO_POV1,
-  TO_POV2,
-  POV_INC,
-  POV_DEC,
-  POV_END,
+  TO_PARTY,
+  TO_QWERTY,
+  RAINBOW,
+  STREAM,
+  ANARCHY,
+  SNOW_HALATION,
 };
 int aqours_index = 0;
 int aqours_led_anim_index = 0;
@@ -101,13 +101,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     TIKA, RIKO, KANAN, DIA, YOU, YOHANE, ZURA, MARI, RUBY, RGB_TOG, TG(_LOCK)
   ),
   [_LOCK] = LAYOUT(
-    KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, TO_POV1, KC_9, RGB_TOG, KC_TRNS
+    KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, TO_PARTY, RGB_TOG, KC_TRNS
   ),
-  [_TO_POV] = LAYOUT(
-    KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, TO_POV1, TO_POV2, RGB_TOG, KC_TRNS
-  ),
-  [_POV] = LAYOUT(
-    POV_INC, POV_DEC, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, POV_END, POV_END
+  [_PARTY] = LAYOUT(
+    RAINBOW, STREAM, ANARCHY, SNOW_HALATION, KC_5, KC_6, KC_7, KC_8, TO_QWERTY, RGB_TOG, KC_TRNS
   ),
 };
 
@@ -125,6 +122,19 @@ void LED_layer_set(int aqours_index) {
   }
   rgblight_set();
 }
+
+int mode_rainbow = false;
+int mode_stream = false;
+int mode_anarchy = false;
+int mode_snow_halation = false;
+
+void mode_reset(void) {
+  mode_rainbow = false;
+  mode_stream = false;
+  mode_anarchy = false;
+  mode_snow_halation = false;
+}
+
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -211,50 +221,62 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
       break;
 
-  case TO_POV1:
-    if (record->event.pressed) {
-      layer_on(_TO_POV);
-    } else {
-      layer_off(_TO_POV);
-    }
-    return false;
+    case RAINBOW:
+      if (record->event.pressed) {
+        mode_reset();
+        mode_rainbow = true;
+        SEND_STRING("RAINBOW");
+      }
+      return false;
     break;
 
-  case TO_POV2:
-    if (record->event.pressed) {
-      pov_mode = true;
-      layer_on(_POV);
-    }
-    return false;
+    case STREAM:
+      if (record->event.pressed) {
+        mode_reset();
+        mode_stream = true;
+        SEND_STRING("STREAM");
+      }
+      return false;
     break;
 
-  case POV_END:
-    if (record->event.pressed) {
-      pov_mode = false;
-      layer_off(_POV);
-    }
-    return false;
+    case ANARCHY:
+      if (record->event.pressed) {
+        mode_reset();
+        mode_anarchy = true;
+        SEND_STRING("ANARCHY");
+      }
+      return false;
     break;
 
-  case POV_INC:
-    if (record->event.pressed) {
-        pov_switch_time+=10;
-    }
-    return false;
+    case SNOW_HALATION:
+      if (record->event.pressed) {
+        mode_reset();
+        mode_snow_halation = true;
+        SEND_STRING("SNOW");
+      }
+      return false;
     break;
 
-  case POV_DEC:
-    if (record->event.pressed) {
-      pov_switch_time+= -10;
-    }
-    return false;
+    case TO_QWERTY:
+      if (record->event.pressed) {
+        layer_on(_QWERTY);
+      }
+      return false;
+    break;
+
+    case TO_PARTY:
+      if (record->event.pressed) {
+        layer_on(_PARTY);
+      }
+      return false;
     break;
   }
   return true;
 }
 
+
 int aqours_led_timer_count = 0;
-int aqours_led_auto_timer_count = 0;
+//int aqours_led_auto_timer_count = 0;
 void aqours_led(void) {
   aqours_led_timer_count++;
   if (aqours_led_timer_count > 500) {
@@ -267,6 +289,7 @@ void aqours_led(void) {
     }
   }
 }
+
 
 void matrix_init_user(void) {
   LED_layer_set(3);
@@ -287,46 +310,71 @@ void matrix_init_user(void) {
   */
 }
 
-
-void pov_lighting(void) {
-  pov_switch_count++;
-  if (pov_switch_count > pov_switch_time) {
-    pov_switch_count = 0;
-    int pov_hue = 0;
-    if (read_num < 5) {
-       pov_hue = 0;
-    } else if (read_num < 14) {
-       pov_hue = 80;
-    } else if (read_num < 29) {
-       pov_hue = 150;
-    } else if (read_num < 38) {
-       pov_hue = 220;
-    } else {
-       pov_hue = 280;
+int time_count = 0;
+void led_rainbow(void) {
+  if(time_count > 500) {
+    for (int k=0;k<12;k++) {
+      sethsv(360/12*k, 255, 255, (LED_TYPE *)&led[k]);
+      time_count = 0;
     }
-
-    read_num++;
-    if (read_num > ELECTRIC_BOARD_LENGTH)  {
-        read_num = read_num - ELECTRIC_BOARD_LENGTH;
-    }
-
-
-
-
-    for (int c=0;c<5;c++) {
-        sethsv(pov_hue, 100, 50*electric_board_data[c][read_num], (LED_TYPE *)&led[4-c]);
-        sethsv(pov_hue, 100, 50*electric_board_data[c][read_num], (LED_TYPE *)&led[c+5]);
-    }
-    sethsv(100, 100, 0, (LED_TYPE *)&led[10]);
-    sethsv(100, 100, 0, (LED_TYPE *)&led[11]);
     rgblight_set();
   }
 }
 
+
+int stream_count = 0;
+void led_stream(void) {
+  if(time_count > 500) {
+    stream_count++;
+    for (int k=0;k<12;k++) {
+      sethsv(360/12*k, 255, 255, (LED_TYPE *)&led[(k+stream_count) % 12]);
+      time_count = 0;
+    }
+    rgblight_set();
+    if (stream_count > 1000) {
+      stream_count = 0;
+    }
+  }
+}
+
+
+void led_anarchy(void) {
+  if(time_count > 100) {
+    for (int k=0;k<12;k++) {
+      sethsv(rand()%360, 255, 255, (LED_TYPE *)&led[k]);
+      time_count = 0;
+    }
+    rgblight_set();
+  }
+}
+
+void led_snow_halation(void) {
+  if(time_count > 400) {
+    for (int k=0;k<6;k++) {
+      sethsv(26, 255, 255, (LED_TYPE *)&led[k*2]);
+      sethsv(26, 30, 255, (LED_TYPE *)&led[k*2+1]);
+      rgblight_set();
+      time_count = 0;
+    }
+  }
+}
 void matrix_scan_user(void) {
 
-    if (pov_mode) {
-      pov_lighting();
+    time_count++;
+    if (time_count > 10000) {
+      time_count = 0;
+    }
+    if (mode_rainbow) {
+      led_rainbow();
+    }
+    if (mode_stream) {
+      led_stream();
+    }
+    if (mode_anarchy) {
+      led_anarchy();
+    }
+    if (mode_snow_halation) {
+      led_snow_halation();
     }
     aqours_led();
 }
