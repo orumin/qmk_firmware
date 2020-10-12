@@ -67,7 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGB_DI_PIN D3
 
 // keyboard RGB LED support
-#define RGBLED_NUM 32
+#define RGBLED_NUM 27
 #define RGBLIGHT_ANIMATIONS
 
 #define OLED_FONT_H "common/glcdfont.c"
