@@ -67,12 +67,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGB_DI_PIN D3
 
 // keyboard RGB LED support
-#define RGBLED_NUM 32
+#define RGBLED_NUM 27
 #define RGBLIGHT_ANIMATIONS
 
 #define OLED_FONT_H "common/glcdfont.c"
 #ifndef IOS_DEVICE_ENABLE
-  #define RGBLIGHT_LIMIT_VAL 200
+  #define RGBLIGHT_LIMIT_VAL 120
   #define RGBLIGHT_VAL_STEP 17
 #else
   #define RGBLIGHT_LIMIT_VAL 35
