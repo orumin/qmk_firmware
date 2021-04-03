@@ -1,5 +1,6 @@
 #include QMK_KEYBOARD_H
 #include "bootloader.h"
+#include "key_layout.h"
 #include"keymap_jp.h"
 #ifdef PROTOCOL_LUFA
 #include "lufa.h"
@@ -65,7 +66,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     * |      |      |      | GUI  |Shift |      | Ctrl | Ctrl |      |Shift | Next | Vol- | Vol+ | Play |
     * `-------------------------------------------------------------------------------------------------'
     */
-                    
+
     [_LOWER] = LAYOUT( \
         KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_END,  KC_PERC,                   KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_HOME, _______, \
         KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,                   KC_CIRC, KC_AMPR, KC_PGUP, KC_PGDN, KC_RPRN, _______, \
@@ -175,7 +176,7 @@ static void render_logo(void) {
 }
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
-    if (!is_helix_master()) {
+    if (!is_keyboard_master()) {
       return OLED_ROTATION_180;  // flips the display 180 degrees if offhand
     }
     return rotation;
@@ -217,7 +218,7 @@ static void render_status(void) {
 }
 
 void oled_task_user(void) {
-    if (is_helix_master()) {
+    if (is_keyboard_master()) {
         render_status();
     } else {
         render_logo();

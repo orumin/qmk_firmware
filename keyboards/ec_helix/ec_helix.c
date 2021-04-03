@@ -16,3 +16,13 @@
 
 #include "ec_helix.h"
 
+#ifdef RGBLIGHT_ENABLE
+void init_rgblight(bool enable) {
+    if(enable){
+        rgblight_enable_noeeprom();
+    }else{
+        rgblight_disable_noeeprom();
+    }
+    rgblight_mode_noeeprom(RGBLIGHT_MODE_BREATHING);
+}
+#endif
