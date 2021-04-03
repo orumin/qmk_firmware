@@ -37,7 +37,7 @@ AUDIO_ENABLE = no       # Audio output on port C6
 FAUXCLICKY_ENABLE = no  # Use buzzer to emulate clicky switches
 HD44780_ENABLE = no     # Enable support for HD44780 based LCDs
 
-DEFAULT_FOLDER = ec_helix/rev2
+DEFAULT_FOLDER = ec_helix
 KEYBD_TOP_DIR := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
 KEYBOARD_PATHS += $(KEYBD_TOP_DIR)/local_drivers
 
@@ -45,6 +45,6 @@ CUSTOM_MATRIX = yes
 
 SRC += local_drivers/serial.c
 SRC += local_drivers/i2c.c
-SRC += rev2/matrix.c
-SRC += rev2/split_util.c
-SRC += rev2/split_scomm.c
+SRC += matrix.c
+SRC += split_util.c
+SRC += split_scomm.c
