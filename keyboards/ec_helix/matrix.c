@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "debug.h"
 #include "util.h"
 #include "matrix.h"
+#include "analog.h"
+#include "debounce.h"
 #include "split_util.h"
 #include "transport.h"
 #include "quantum.h"
@@ -68,41 +70,19 @@ static const uint8_t col_pins[] = MATRIX_COL_PINS;
 
 /* matrix state(1:on, 0:off) */
 static matrix_row_t matrix[MATRIX_ROWS];
-static uint8_t debounce[KEY_NUM];
+static uint8_t debounced_matrix[KEY_NUM];
 uint32_t timer_1ms;
 
 // row offsets for each hand
 uint8_t thisHand, thatHand;
 
-__attribute__ ((weak))
-void matrix_init_kb(void) {
-    matrix_init_user();
-}
+__attribute__((weak)) void matrix_init_kb(void) { matrix_init_user(); }
 
-__attribute__ ((weak))
-void matrix_scan_kb(void) {
-    matrix_scan_user();
-}
+__attribute__((weak)) void matrix_scan_kb(void) { matrix_scan_user(); }
 
-__attribute__ ((weak))
-void matrix_init_user(void) {
-}
+__attribute__((weak)) void matrix_init_user(void) {}
 
-__attribute__ ((weak))
-void matrix_scan_user(void) {
-}
-
-inline
-uint8_t matrix_rows(void)
-{
-    return MATRIX_ROWS;
-}
-
-inline
-uint8_t matrix_cols(void)
-{
-    return MATRIX_COLS;
-}
+__attribute__ ((weak)) void matrix_slave_scan_user(void) {}
 
 typedef struct{
     uint8_t threshold;
@@ -276,7 +256,7 @@ static uint8_t read_all(matrix_row_t current_matrix[], uint8_t offset) {
     // For each key...
     for (uint8_t k = 0; k < KEY_NUM; k++) {
 
-		if(debounce[k]>0){
+		if(debounced_matrix[k]>0){
 			continue;
 		}
 
@@ -311,7 +291,7 @@ static uint8_t read_all(matrix_row_t current_matrix[], uint8_t offset) {
         }
 
 		if(changed){
-			debounce[k] = DEBOUNCE;
+			debounced_matrix[k] = DEBOUNCE;
 			changed_all = 1;
 		}
     }
@@ -341,8 +321,8 @@ static uint8_t read_all(matrix_row_t current_matrix[], uint8_t offset) {
 	if (TIMER_DIFF_32(timer_now, timer_1ms) > 1) {
 		timer_1ms = timer_now;
 		for(uint16_t k=0;k<KEY_NUM;k++){
-			if(debounce[k]>0){
-				debounce[k]--;
+			if(debounced_matrix[k]>0){
+				debounced_matrix[k]--;
 			}
 		}
 	}
@@ -379,7 +359,7 @@ void matrix_init(void)
     for(uint8_t k=0;k<KEY_NUM;k++){
         // Low Pass Filter Init
         finter_config(&filter[k], DEFAULT_LOWPASS_HZ, DEFAULT_FILTER_Q, DEFAULT_SAMPLE_HZ);
-		debounce[k]=0;
+		debounced_matrix[k]=0;
     }
 
     matrix_init_quantum();
@@ -419,7 +399,7 @@ bool matrix_post_scan(void) {
     } else {
         transport_slave(matrix + thatHand, matrix + thisHand);
 
-        //matrix_slave_scan_user();
+        matrix_slave_scan_user();
         return false;
     }
     matrix_scan_quantum();

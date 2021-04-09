@@ -182,39 +182,36 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     return rotation;
 }
 
-static void render_layer_status(void) {
-    // Define layers here, Have not worked out how to have text displayed for each layer. Copy down the number you see and add a case for it below
+static void render_status(void) {
+    oled_write_P(PSTR("\n"), false);
+    oled_write_P(PSTR("\n"), false);
+    oled_write_P(PSTR("\n"), false);
+    // Host Keyboard Layer Status
     oled_write_P(PSTR("Layer: "), false);
+
     switch (get_highest_layer(layer_state)) {
         case _QWERTY:
-        oled_write_P(PSTR("Default"), false);
-        break;
+            oled_write_P(PSTR("Default\n"), false);
+            break;
         case _RAISE:
-        oled_write_P(PSTR("Raise"), false);
-        break;
+            oled_write_P(PSTR("Raise\n"), false);
+            break;
         case _LOWER:
-        oled_write_P(PSTR("Lower"), false);
-        break;
+            oled_write_P(PSTR("Lower\n"), false);
+            break;
         case _ADJUST:
-        oled_write_P(PSTR("Adjust"), false);
-        break;
+            oled_write_P(PSTR("Adjust\n"), false);
+            break;
         default:
-        oled_write_P(PSTR("Undef-"), false);
+            // Or use the write_ln shortcut over adding '\n' to the end of your string
+            oled_write_ln_P(PSTR("Undefined"), false);
     }
-}
-
-static void render_status(void) {
-    render_layer_status();
-    oled_write_P(PSTR("\n"), false);
 
     // Host Keyboard LED Status
     led_t led_state = host_keyboard_led_state();
     oled_write_P(led_state.num_lock ? PSTR("NUM ") : PSTR("    "), false);
-    oled_write_P(PSTR("\n"), false);
     oled_write_P(led_state.caps_lock ? PSTR("CAP ") : PSTR("    "), false);
-    oled_write_P(PSTR("\n"), false);
     oled_write_P(led_state.scroll_lock ? PSTR("SCR ") : PSTR("    "), false);
-    oled_write_P(PSTR("\n"), false);
 }
 
 void oled_task_user(void) {
