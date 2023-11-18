@@ -10,13 +10,21 @@
   "indicators": {
     "caps_lock": "F4"
   },
+  "battery": {
+    "driver": "custom"
+  },
   "bluetooth": {
-    "driver": "bluefruit_le"
+    "driver": "bluefruit_le_uart"
   },
   "processor": "atmega32u4",
   "bootloader": "lufa-ms",
+  "build": {
+    "lto": true
+  },
   "features": {
+    "battery": true,
     "bootmagic": true,
+    "bluetooth": true,
     "mousekey": true,
     "extrakey": true,
     "command": true

@@ -17,6 +17,17 @@
 #include "quantum.h"
 
 extern uint8_t power_save_level;
+#ifdef CONNECTION_ENABLE
+#    include "connection.h"
+#    include "lufa.h"
+     static bool usb_connected = false;
+     static bool force_usb = false;
+#endif
+
+#ifdef BLUETOOTH_BLUEFRUIT_LE_UART
+#    include "bluefruit_le.h"
+#    include "bluefruit_le_uart.h"
+#endif
 
 void hhkb_led_on(uint8_t led) {
     switch (led) {
@@ -85,10 +96,27 @@ void keyboard_pre_init_kb(void) {
     gpio_set_pin_output(D6);
     gpio_write_pin_low(D6);
 
+#ifdef BLUETOOTH_BLUEFRUIT_LE_UART
+    (void)bluefruit_le_set_mode_leds(false);
+#endif
+
     keyboard_pre_init_user();
 }
 
+void keyboard_post_init_kb(void) {
+    if (connection_get_host() != CONNECTION_HOST_BLUETOOTH &&
+          USB_DeviceState == DEVICE_STATE_Configured) {
+        usb_connected = true;
+        connection_set_host_noeeprom(CONNECTION_HOST_USB);
+    }
+}
+
 void suspend_power_down_kb(void) {
+
+#ifdef BLUETOOTH_BLUEFRUIT_LE_UART
+    (void)bluefruit_le_set_mode_leds(false);
+#endif
+
     if (power_save_level > 2) {
         // Disable UART TX to avoid current leakage
         UCSR1B &= ~_BV(TXEN1);
@@ -104,6 +132,10 @@ void suspend_wakeup_init_kb(void) {
     gpio_write_pin_low(D5);
     // Enable UART TX
     UCSR1B |= _BV(TXEN1);
+
+#ifdef BLUETOOTH_BLUEFRUIT_LE_UART
+    (void)bluefruit_le_set_mode_leds(true);
+#endif
 
     suspend_wakeup_init_user();
 }
