@@ -15,6 +15,7 @@
  */
 
 #include "bluefruit_le.h"
+#include "bluefruit_le_uart.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -372,6 +373,10 @@ bool bluefruit_le_set_battery_level(uint8_t level) {
     return at_command(cmd, len, NULL, 0);
 }
 
+bool bluefruit_le_factory_reset(void) {
+    return at_command_P(PSTR("AT+FACTORYRESET"), NULL, 0);
+}
+
 bool bluefruit_le_delbonds(void) {
     if (!state.configured) {
         return false;
@@ -387,4 +392,15 @@ bool bluefruit_le_reconnect(void) {
         return false;
     }
     return at_command_P(PSTR("AT+GAPSTARTADV"), NULL, 0);
+}
+
+bool bluefruit_le_change_discoverable(const bool flag)
+{
+    if (!state.configured) {
+        return false;
+    }
+    if (flag) {
+        return at_command_P(PSTR("AT+GAPSETADV=02-01-06"), NULL, 0);
+    }
+    return at_command_P(PSTR("AT+GAPSETADV=02-01-04"), NULL, 0);
 }
