@@ -57,9 +57,7 @@ static struct {
 enum queue_type {
     QTKeyReport,  // 1-byte modifier + 6-byte key report
     QTConsumer,   // 16-bit key code
-#ifdef MOUSE_ENABLE
     QTMouseMove,  // 4-byte mouse report
-#endif
 };
 
 struct queue_item {
@@ -70,12 +68,7 @@ struct queue_item {
             uint8_t keys[6];
         } key;
         uint16_t consumer;
-#ifdef MOUSE_ENABLE
-        struct __attribute__((packed)) {
-            int8_t  x, y, scroll, pan;
-            uint8_t buttons;
-        } mousemove;
-#endif
+        report_mouse_t mousemove;
     };
 };
 
@@ -281,6 +274,11 @@ void bluefruit_le_task(void) {
     }
 }
 
+#ifdef MOUSE_ENABLE
+#    define MOUSE_TO_KEY(x) ((x&MOUSE_BTN1) ? 'L' : \
+                             ((x&MOUSE_BTN2) ? 'R' : \
+                              (x&MOUSE_BTN3) ? 'M' : '0'))
+#endif
 static bool process_queue_item(struct queue_item *item) {
     char cmdbuf[48];
 
@@ -299,11 +297,11 @@ static bool process_queue_item(struct queue_item *item) {
 
 #ifdef MOUSE_ENABLE
         case QTMouseMove:
-            len = snprintf_P(cmdbuf, sizeof(cmdbuf), PSTR("AT+BLEHIDMOUSEMOVE=%d,%d,%d,%d"), item->mousemove.x, item->mousemove.y, item->mousemove.scroll, item->mousemove.pan);
+            len = snprintf_P(cmdbuf, sizeof(cmdbuf), PSTR("AT+BLEHIDMOUSEMOVE=%d,%d,%d,%d"), item->mousemove.x, item->mousemove.y, item->mousemove.v, item->mousemove.h);
             if (!at_command(cmdbuf, len, NULL, 0)) {
                 return false;
             }
-            len = snprintf_P(cmdbuf, sizeof(cmdbuf), PSTR("AT+BLEHIDMOUSEBUTTON=%d"), item->mousemove.buttons);
+            len = snprintf_P(cmdbuf, sizeof(cmdbuf), PSTR("AT+BLEHIDMOUSEBUTTON=%c"), MOUSE_TO_KEY(item->mousemove.buttons));
             return at_command(cmdbuf, len, NULL, 0);
 #endif
         default:
@@ -370,6 +368,31 @@ bool bluefruit_le_set_battery_level(uint8_t level) {
         return false;
     }
     len = snprintf_P(cmd, sizeof(cmd), PSTR("AT+BLEBATTVAL=%d"), level);
+    return at_command(cmd, len, NULL, 0);
+}
+
+bool bluefruit_le_set_mode_leds(bool on) {
+    if (!state.configured) {
+        return false;
+    }
+
+    // The "mode" led is the red blinky one
+    at_command_P(on ? PSTR("AT+HWMODELED=1") : PSTR("AT+HWMODELED=0"), NULL, 0);
+
+    // Pin 19 is the blue "connected" LED; turn that off too.
+    // When turning LEDs back on, don't turn that LED on if we're
+    // not connected, as that would be confusing.
+    at_command_P(on && state.is_connected ? PSTR("AT+HWGPIO=19,1") : PSTR("AT+HWGPIO=19,0"), NULL, 0);
+    return true;
+}
+
+// https://learn.adafruit.com/adafruit-feather-32u4-bluefruit-le/ble-generic#at-plus-blepowerlevel
+bool bluefruit_le_set_power_level(int8_t level) {
+    char cmd[46];
+    if (!state.configured) {
+        return false;
+    }
+    size_t len = snprintf(cmd, sizeof(cmd), "AT+BLEPOWERLEVEL=%d", level);
     return at_command(cmd, len, NULL, 0);
 }
 
