@@ -77,7 +77,7 @@ static struct {
     bool configured;
 
     uint16_t last_connection_update;
-} state;
+} state = { false, false, false, 0 };
 
 // Using a queue for the AT commands because reading the RX requires
 // interrupt so can not be done in USB interrupt handler
