@@ -35,7 +35,7 @@ void hhkb_led_on(uint8_t led) {
             gpio_write_pin_high(F4);
             break;
         case 2:
-            gpio_write_pin_high(F2);
+            gpio_write_pin_high(F1);
             break;
         case 3:
             gpio_write_pin_high(F0);
@@ -49,7 +49,7 @@ void hhkb_led_off(uint8_t led) {
             gpio_write_pin_low(F4);
             break;
         case 2:
-            gpio_write_pin_low(F2);
+            gpio_write_pin_low(F1);
             break;
         case 3:
             gpio_write_pin_low(F0);
