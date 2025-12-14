@@ -161,18 +161,3 @@ bool matrix_scan_custom(matrix_row_t current_matrix[]) {
 
     return matrix_has_changed;
 }
-
-bool command_extra(uint8_t code) {
-    switch (code) {
-#ifdef BLUETOOTH_BLUEFRUIT_LE_UART
-        case KC_R:
-            bluefruit_le_delbonds();
-            return true;
-        case KC_S:
-            bluefruit_le_reconnect();
-            return true;
-#endif
-        default:
-            return false;
-    }
-}

@@ -16,7 +16,6 @@
 
 #include "quantum.h"
 
-extern uint8_t power_save_level;
 #ifdef CONNECTION_ENABLE
 #    include "connection.h"
 #    include "lufa.h"
@@ -24,9 +23,21 @@ extern uint8_t power_save_level;
      static bool force_usb = false;
 #endif
 
+#ifdef BLUETOOTH_ENABLE
+#    include "bluetooth.h"
+#    include "send_string.h"
+     extern uint8_t power_save_level;
+#endif
+
 #ifdef BLUETOOTH_BLUEFRUIT_LE_UART
 #    include "bluefruit_le.h"
 #    include "bluefruit_le_uart.h"
+     enum BLE_NEXT_ACTION {
+         BLE_NOTHING = 0,
+         BLE_START_ADV,
+         BLE_STOP_ADV,
+         BLE_DEL_BONDS,
+     } bluefruit_le_set_code = 0;
 #endif
 
 void hhkb_led_on(uint8_t led) {
@@ -147,4 +158,80 @@ layer_state_t layer_state_set_kb(layer_state_t state) {
     gpio_write_pin(F0, IS_LAYER_ON_STATE(state, 2));
 
     return state;
+}
+
+void housekeeping_task_user() {
+#ifdef BLUETOOTH_ENABLE
+#ifdef BLUETOOTH_BLUEFRUIT_LE_UART
+    if (power_save_level <= 1) {
+        switch (bluefruit_le_set_code) {
+            case BLE_START_ADV:
+              bluefruit_le_change_discoverable(true);
+              bluefruit_le_set_code = 0;
+              break;
+            case BLE_STOP_ADV:
+              bluefruit_le_change_discoverable(false);
+              bluefruit_le_set_code = 0;
+              break;
+            case BLE_DEL_BONDS:
+              bluefruit_le_delbonds();
+              bluefruit_le_set_code = BLE_START_ADV;
+              break;
+            default:
+              break;
+        }
+    }
+#endif
+    if (!force_usb) {
+        if(bluetooth_is_connected() && connection_get_host() != CONNECTION_HOST_BLUETOOTH) {
+            connection_set_host(CONNECTION_HOST_BLUETOOTH);
+        } else if (!usb_connected && (USB_DeviceState == DEVICE_STATE_Configured)) {
+            force_usb = true;
+            usb_connected = true;
+        }
+    } else {
+        if (connection_get_host() != CONNECTION_HOST_USB) {
+            usb_connected = true;
+            connection_set_host(CONNECTION_HOST_USB);
+        } else if (USB_DeviceState != DEVICE_STATE_Configured) {
+            force_usb = false;
+            usb_connected = false;
+        }
+    }
+#endif
+}
+
+bool command_extra(uint8_t code) {
+    switch (code) {
+        case KC_B:
+            clear_keyboard();
+            wait_us(1000);
+            bootloader_jump();
+            break;
+        case KC_P:
+            power_save_level ^= 1;
+            break;
+#ifdef BLUETOOTH_ENABLE
+        case KC_U:
+            force_usb ^= 1;
+            break;
+            break;
+#endif
+#ifdef BLUETOOTH_BLUEFRUIT_LE_UART
+        case KC_I:
+        case KC_O:
+        case KC_R:
+            if (code == KC_I) {
+                bluefruit_le_set_code = BLE_START_ADV;
+            } else if (code == KC_O) {
+                bluefruit_le_set_code = BLE_STOP_ADV;
+            } else {
+                bluefruit_le_set_code = BLE_DEL_BONDS;
+            }
+            break;
+#endif
+        default:
+            return false;
+    }
+    return true;
 }
