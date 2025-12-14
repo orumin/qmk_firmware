@@ -14,31 +14,61 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <alloca.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "bluefruit_le.h"
 #include "bluefruit_le_uart.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <alloca.h>
-#include "uart.h"
 #include "debug.h"
-#include "timer.h"
 #include "progmem.h"
+#include "report.h"
+#include "timer.h"
+#include "uart.h"
+#include "usb_util.h"
 
 #define TIMEOUT 100
-#define SAMPLE_BATTERY
-#define BATTERY_FULL 550
-#define BATTERY_EMPTY 326
 #define ConnectionUpdateInterval 1000 /* milliseconds */
-#define BatteryLevelUpdateInterval 60000
+#define TOSTRING_(x) #x
 
 #ifndef NRF51_BAUD_RATE
 #    define NRF51_BAUD_RATE 76800
 #endif
 
-#ifdef SAMPLE_BATTERY
-bool bluefruit_le_set_battery_level(uint8_t level);
+#if defined(BATTERY_ENABLE) && defined (BATTERY_DRIVER_CUSTOM)
+#    include "battery_driver.h"
+
+#    ifndef NRF51_VBAT_ADC_PIN
+#        define NRF51_USE_VBAT_API
+#        ifndef NRF51_BATTERY_FULL
+#            define BATTERY_FULL 4200
+#        endif
+#        ifndef NRF51_BATTERY_EMPTY
+#            define BATTERY_EMPTY 3450
+#        endif
+#        define CALC_VBAT_EXP(x) (x * 2 / 15 - 459)
+#    else
+#        define VBAT(x) TOSTRING_(x)
+
+#        ifndef NRF51_BATTERY_FULL
+#            define BATTERY_FULL 550
+#        endif
+#        ifndef NRF51_BATTERY_EMPTY
+#            define BATTERY_EMPTY 326
+#        endif
+#        define CALC_VBAT_EXP(x) \
+             (((x - BATTERY_EMPTY) / (float)(BATTERY_FULL - BATTERY_EMPTY)) * 100)
+#    endif
+
+#    define BATTERY_CALC_PERCENTAGE(IN, OUT) \
+         do { \
+            if (IN >= BATTERY_FULL) OUT = 100; \
+            else if (IN <= BATTERY_EMPTY) OUT = 0; \
+            else OUT = CALC_VBAT_EXP(IN); \
+         } while(0)
 #endif
 
 static struct {
@@ -46,9 +76,6 @@ static struct {
     bool initialized;
     bool configured;
 
-#ifdef SAMPLE_BATTERY
-    uint16_t last_battery_update;
-#endif
     uint16_t last_connection_update;
 } state;
 
@@ -171,6 +198,33 @@ static bool at_command_P(const char *cmd, char *resp, uint16_t resplen) {
     return at_command(cmdbuf, len, resp, resplen);
 }
 
+#if defined(BATTERY_ENABLE) && defined (BATTERY_DRIVER_CUSTOM)
+static uint32_t read_battery_voltage(void) {
+    char resbuf[8];
+    if (!state.configured) {
+        return 0;
+    }
+#ifdef NRF51_USE_VBAT_API
+    if (at_command_P(PSTR("AT+HWVBAT"), resbuf, sizeof(resbuf))) {
+#else
+    if (at_command_P(PSTR("AT+HWADC=" VBAT(NRF51_VBAT_ADC_PIN)), resbuf, sizeof(resbuf))) {
+#endif
+        return atoi(resbuf);
+    }
+    return 0;
+}
+
+static bool set_battery_level(uint8_t level) {
+    size_t len = 0;
+    char cmd[32];
+    if (!state.configured) {
+        return false;
+    }
+    len = snprintf_P(cmd, sizeof(cmd), PSTR("AT+BLEBATTVAL=%d"), level);
+    return at_command(cmd, len, NULL, 0);
+}
+#endif
+
 bool bluefruit_le_enable_keyboard(void) {
     char resbuf[128];
 
@@ -200,7 +254,7 @@ bool bluefruit_le_enable_keyboard(void) {
     // Turn down the power level a bit
     static const char kPower[] PROGMEM = "AT+BLEPOWERLEVEL=-12";
 
-#ifdef SAMPLE_BATTERY
+#if defined(BATTERY_ENABLE) && defined (BATTERY_DRIVER_CUSTOM)
     // Enable battery service
     static const char kBattEn[] PROGMEM = "AT+BLEBATTEN=1";
 #endif
@@ -210,7 +264,7 @@ bool bluefruit_le_enable_keyboard(void) {
 
     static PGM_P const configure_commands[] PROGMEM = {
         kEcho,   kGapIntervals, kGapDevName, kHidEnOn, kPower,
-#ifdef SAMPLE_BATTERY
+#if defined(BATTERY_ENABLE) && defined (BATTERY_DRIVER_CUSTOM)
         kBattEn,
 #endif
         kATZ,
@@ -232,7 +286,6 @@ bool bluefruit_le_enable_keyboard(void) {
     // Check connection status in a little while; allow the ATZ time
     // to kick in.
     state.last_connection_update = timer_read();
-    state.last_battery_update    = 0;
 fail:
     return state.configured;
 }
@@ -264,13 +317,6 @@ void bluefruit_le_task(void) {
         if (at_command_P(kGetConn, resbuf, sizeof(resbuf))) {
             set_connected(atoi(resbuf));
         }
-    }
-
-    if (timer_elapsed(state.last_battery_update) > BatteryLevelUpdateInterval) {
-        state.last_battery_update = timer_read();
-
-        uint8_t level = (bluefruit_le_read_battery_voltage() - BATTERY_EMPTY) / (float)(BATTERY_FULL - BATTERY_EMPTY) * 100;
-        bluefruit_le_set_battery_level(level);
     }
 }
 
@@ -335,40 +381,17 @@ void bluefruit_le_send_consumer(uint16_t usage) {
     enqueue(&send_queue, &item);
 }
 
-#ifdef MOUSE_ENABLE
 void bluefruit_le_send_mouse(report_mouse_t *report) {
     struct queue_item item;
 
     item.queue_type        = QTMouseMove;
     item.mousemove.x       = report->x;
     item.mousemove.y       = report->y;
-    item.mousemove.scroll  = report->v;
-    item.mousemove.pan     = report->h;
+    item.mousemove.v       = report->v;
+    item.mousemove.h       = report->h;
     item.mousemove.buttons = report->buttons;
 
     enqueue(&send_queue, &item);
-}
-#endif
-
-uint32_t bluefruit_le_read_battery_voltage(void) {
-    char resbuf[8];
-    if (!state.configured) {
-        return 0;
-    }
-    if (at_command_P(PSTR("AT+HWADC=6"), resbuf, sizeof(resbuf))) {
-        return atoi(resbuf);
-    }
-    return 0;
-}
-
-bool bluefruit_le_set_battery_level(uint8_t level) {
-    size_t len = 0;
-    char cmd[32];
-    if (!state.configured) {
-        return false;
-    }
-    len = snprintf_P(cmd, sizeof(cmd), PSTR("AT+BLEBATTVAL=%d"), level);
-    return at_command(cmd, len, NULL, 0);
 }
 
 bool bluefruit_le_set_mode_leds(bool on) {
@@ -427,3 +450,19 @@ bool bluefruit_le_change_discoverable(const bool flag)
     }
     return at_command_P(PSTR("AT+GAPSETADV=02-01-04"), NULL, 0);
 }
+
+#if defined(BATTERY_ENABLE) && defined(BATTERY_DRIVER_CUSTOM)
+void battery_driver_init(void) {}
+uint8_t battery_driver_sample_percent(void) {
+    uint32_t voltage = read_battery_voltage();
+    uint8_t level = 0;
+    if (!state.configured || usb_connected_state()) {
+        return 100;
+    }
+
+    BATTERY_CALC_PERCENTAGE(voltage, level);
+
+    set_battery_level(level);
+    return level;
+}
+#endif
