@@ -204,10 +204,11 @@ static uint32_t read_battery_voltage(void) {
     if (!state.configured) {
         return 0;
     }
+    resbuf[0] = '\0';
 #ifdef NRF51_USE_VBAT_API
-    if (at_command_P(PSTR("AT+HWVBAT"), resbuf, sizeof(resbuf))) {
+    if (at_command_P(PSTR("AT+HWVBAT"), resbuf, sizeof(resbuf)) || resbuf[0]) {
 #else
-    if (at_command_P(PSTR("AT+HWADC=" VBAT(NRF51_VBAT_ADC_PIN)), resbuf, sizeof(resbuf))) {
+    if (at_command_P(PSTR("AT+HWADC=" VBAT(NRF51_VBAT_ADC_PIN)), resbuf, sizeof(resbuf)) || resbuf[0]) {
 #endif
         return atoi(resbuf);
     }
@@ -314,7 +315,8 @@ void bluefruit_le_task(void) {
         static const char kGetConn[] PROGMEM = "AT+GAPGETCONN";
         state.last_connection_update         = timer_read();
 
-        if (at_command_P(kGetConn, resbuf, sizeof(resbuf))) {
+        resbuf[0] = '\0';
+        if (at_command_P(kGetConn, resbuf, sizeof(resbuf)) || resbuf[0]) {
             set_connected(atoi(resbuf));
         }
     }
